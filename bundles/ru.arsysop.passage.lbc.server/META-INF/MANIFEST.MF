@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Version: 1.0.0.qualifier
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-Copyright: %Bundle-Copyright
+Bundle-SymbolicName: ru.arsysop.passage.lbc.server;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Export-Package: ru.arsysop.passage.lbc.server
+Require-Bundle: javax.servlet,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore,
+ ru.arsysop.passage.lic.runtime,
+ com.fasterxml.jackson.core.jackson-databind,
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2"
+Automatic-Module-Name: ru.arsysop.passage.licensing.server
+
+

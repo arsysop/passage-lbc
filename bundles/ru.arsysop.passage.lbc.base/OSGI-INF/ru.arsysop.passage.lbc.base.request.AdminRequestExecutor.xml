@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ru.arsysop.passage.lbc.server.base.request.AdminRequestExecutor">
+   <implementation class="ru.arsysop.passage.lbc.base.request.AdminRequestExecutor"/>
+   <service>
+      <provide interface="ru.arsysop.passage.lbc.server.ServerRequestExecutor"/>
+   </service>
+   <property name="accessmode" type="String" value="admin"/>
+</scr:component>

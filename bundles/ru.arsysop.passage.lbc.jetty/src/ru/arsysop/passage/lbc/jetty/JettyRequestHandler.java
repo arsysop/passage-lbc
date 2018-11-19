@@ -1,0 +1,64 @@
+/*******************************************************************************
+ * Copyright (c) 2018 ArSysOp
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     ArSysOp - initial API and implementation
+ *******************************************************************************/
+package ru.arsysop.passage.lbc.jetty;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+
+import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
+import ru.arsysop.passage.lbc.server.ServerRequestHandler;
+
+public class JettyRequestHandler extends AbstractHandler implements ServerRequestHandler {
+
+	private List<ServerRequestExecutor> serverRequestExecutors = new ArrayList<>();
+
+	@Override
+	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+
+		for (ServerRequestExecutor requestExecutor : serverRequestExecutors) {
+			if (requestExecutor.checkAccesstMode(baseRequest)) {
+				requestExecutor.executeRequest(request, response);
+				baseRequest.setHandled(true);
+			}
+		}
+	}
+
+	@Override
+	public void addRequestExecutor(ServerRequestExecutor executor) {
+		if (!serverRequestExecutors.contains(executor)) {
+			serverRequestExecutors.add(executor);
+		}
+	}
+
+	@Override
+	public void remRequestExecutor(ServerRequestExecutor executor) {
+		if (serverRequestExecutors.contains(executor)) {
+			serverRequestExecutors.remove(executor);
+		}
+	}
+}
