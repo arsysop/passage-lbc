@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: ru.arsysop.passage.lbc.base
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: %Bundle-Vendor
+Bundle-Copyright: %Bundle-Copyright
+Automatic-Module-Name: ru.arsysop.passage.licnsing.server.base
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: javax.servlet,
+ org.eclipse.osgi,
+ ru.arsysop.passage.lbc.server,
+ ru.arsysop.passage.lic.runtime,
+ com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.9.2",
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2",
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.2"
+Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy
+

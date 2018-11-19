@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" immediate="true" name="ru.arsysop.passage.lbc.base.condition.ServerConditionsStorage">
+   <implementation class="ru.arsysop.passage.lbc.base.condition.ServerConditionsStorage"/>
+   <service>
+      <provide interface="ru.arsysop.passage.lbc.server.LicensingConditionStorage"/>
+   </service>
+   <properties entry="OSGI-INF/serverConditions.properties"/>
+</scr:component>
