@@ -17,7 +17,7 @@
 
    <windowImages/>
 
-   <launcher name="passageLicensingServer">
+   <launcher name="PassageServer">
       <win useIco="false">
          <bmp/>
       </win>
@@ -94,7 +94,7 @@
    </plugins>
 
    <features>
-      <feature id="ru.arsysop.passage.licensing.server.feature" version="0.2.0.qualifier"/>
+      <feature id="ru.arsysop.passage.lbc.feature" version="0.2.0.qualifier"/>
       <feature id="org.eclipse.equinox.server.core" version="1.6.0.v20180502-1828"/>
       <feature id="org.eclipse.equinox.server.jetty" version="1.5.0.v20180508-1121"/>
       <feature id="org.eclipse.equinox.server.p2" version="1.4.0.v20180515-2149"/>
