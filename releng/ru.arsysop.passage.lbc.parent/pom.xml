@@ -38,21 +38,6 @@
 	</properties>
 
 	<repositories>
-		<repository>
-			<id>passage.rt-develop</id>
-			<url>${repositoryManager.url}/${repositoryManager.path}/passage.rt-develop/</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>ek.equinox-develop</id>
-			<url>${repositoryManager.url}/${repositoryManager.path}/ek.equinox-develop/</url>
-			<layout>p2</layout>
-		</repository>
-		<repository>
-			<id>ek.emf-develop</id>
-			<url>${repositoryManager.url}/${repositoryManager.path}/ek.emf-develop/</url>
-			<layout>p2</layout>
-		</repository>
 	</repositories>
 
 	<build>
