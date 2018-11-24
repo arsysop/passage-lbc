@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 
 
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lbc.server.ServerConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
 
 public class ServerConditionsStorage implements LicensingConditionStorage {
 

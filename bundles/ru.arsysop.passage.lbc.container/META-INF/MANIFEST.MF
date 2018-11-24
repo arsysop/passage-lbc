@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-SymbolicName: ru.arsysop.passage.lbc.container
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-Copyright: %Bundle-Copyright
 Automatic-Module-Name: ru.arsysop.passage.lbc.server.container
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

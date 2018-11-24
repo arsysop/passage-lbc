@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?>
-<target name="ru.arsysop.passage.licensing.server.target" sequenceNumber="21">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="ru.arsysop.passage.licensing.server.target" sequenceNumber="21">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.junit" version="4.12.0.v201504281640"/>
@@ -33,8 +31,8 @@
 			<repository location="http://dl.bintray.com/arsysop/passage-brc/0.3.1/"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-			<unit id="ru.arsysop.passage.lic.equinox.feature.feature.group" version="0.0.0"/>
 			<repository location="http://dl.bintray.com/arsysop/passage-lic/0.3.0/"/>
+			<unit id="ru.arsysop.passage.lic.equinox.feature.feature.group" version="0.0.0"/>
 		</location>
 	</locations>
 </target>

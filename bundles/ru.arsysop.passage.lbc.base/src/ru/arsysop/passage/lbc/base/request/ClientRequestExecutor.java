@@ -42,7 +42,7 @@ public class ClientRequestExecutor implements ServerRequestExecutor {
 	private static Map<String, ServerRequestAction> mapActionRequest = new HashMap<>();
 
 	private static final String RESPONSE_ERROR_UNTRUSTED = "Recieved unttrusted client";
-	private static final String MSG_REQUEST_ACTION_NOT_FOUND_ERROR = "Action id: %s not found";
+	private static final String MSG_REQUEST_ACTION_NOT_FOUND_ERROR = "Action executor with id: [%s] not registered";
 
 	private String accessModeId = "";
 
@@ -55,7 +55,7 @@ public class ClientRequestExecutor implements ServerRequestExecutor {
 		if (clientRecognition(request)) {
 			ServerRequestAction requestAction = mapActionRequest.get(actionId);
 			if (requestAction == null) {
-				LOG.info(String.format(MSG_REQUEST_ACTION_NOT_FOUND_ERROR, requestAction));
+				LOG.info(String.format(MSG_REQUEST_ACTION_NOT_FOUND_ERROR, actionId));
 				return;
 			}
 			if (!requestAction.execute(request, response)) {

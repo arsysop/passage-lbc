@@ -22,6 +22,8 @@ package ru.arsysop.passage.lbc.base.actions;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,42 +36,46 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-
-import ru.arsysop.passage.lbc.server.ServerConditionDescriptor;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lbc.server.ServerTransferObject;
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
+import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
+import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 
+/**
+ * According to AccessManager specification implementation of 
+ * {@code Iterable<ConditionDescriptor> extractConditions(Object configuration)}
+ * {@link ru.arsysop.passage.lic.runtime.AccessManager}
+ */
 public class ConditionDescriptorRequestAction implements ServerRequestAction {
 
-	private static final String CHARSET_UTF_8 = "UTF-8";
+	private static final String CHARSET_UTF_8 = "UTF-8"; // NLS-$1
 	private static final String APPLICATION_JSON = "application/json";
 	private static final String MSG_LOG = "Execute action class:";
 
 	private Logger logger;
-	private ConditionMiner licenseConditionMiner;
+
+	private List<ConditionMiner> licenseConditionMiners = new ArrayList<>();
 
 	@Override
 	public boolean execute(HttpServletRequest request, HttpServletResponse response) {
 		if (logger == null) {
 			return false;
 		}
-		if (licenseConditionMiner == null) {
-			logger.error(ConditionMiner.class.getName() + " not bind to action");
+		if (licenseConditionMiners == null || licenseConditionMiners.isEmpty()) {
+			logger.error(ConditionMiner.class.getName() + " miners not available or defined");
 			return false;
 		}
-		logger.debug(MSG_LOG + this.getClass().getName());
+		logger.info(MSG_LOG + this.getClass().getName());
 
-		ServerTransferObject transportObject = createTransportObject();
+		TransferObjectDescriptor transportObject = createTransportObject();
 		boolean responseResult = responseProcessing(response, transportObject);
 		return responseResult;
 	}
 
-	private boolean responseProcessing(HttpServletResponse response, ServerTransferObject transportObject) {
+	private boolean responseProcessing(HttpServletResponse response, TransferObjectDescriptor transportObject) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
 		try {
 			PrintWriter printerWriter = response.getWriter();
 			response.setContentType(APPLICATION_JSON);
@@ -85,13 +91,16 @@ public class ConditionDescriptorRequestAction implements ServerRequestAction {
 		return false;
 	}
 
-	private ServerTransferObject createTransportObject() {
-		ServerTransferObject transportObject = new ServerTransferObject();
-		Iterable<ConditionDescriptor> extractConditionDescriptors = licenseConditionMiner
-				.extractConditionDescriptors(null);
-		for (ConditionDescriptor d : extractConditionDescriptors) {
-			transportObject.addDescriptors((ServerConditionDescriptor) d);
+	private TransferObjectDescriptor createTransportObject() {
+		TransferObjectDescriptor transportObject = new TransferObjectDescriptor();
+
+		for (ConditionMiner miner : licenseConditionMiners) {
+			Iterable<ConditionDescriptor> extractConditionDescriptors = miner.extractConditionDescriptors(null);
+			for (ConditionDescriptor descriptor : extractConditionDescriptors) {
+				transportObject.addDescriptor((ServerConditionDescriptor) descriptor);
+			}
 		}
+
 		return transportObject;
 	}
 
@@ -103,12 +112,12 @@ public class ConditionDescriptorRequestAction implements ServerRequestAction {
 		this.logger = null;
 	}
 
-	public void bindLicenseComponentAdmin(ConditionMiner licenseAdmin, Map<String, String> context) {
-		this.licenseConditionMiner = licenseAdmin;
+	public void bindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
+		this.licenseConditionMiners.add(conditionMiner);
 	}
 
-	public void unbindLicenseComponentAdmin(ConditionMiner licenseAdmin, Map<String, String> context) {
-		this.licenseConditionMiner = null;
+	public void unbindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
+		this.licenseConditionMiners.remove(conditionMiner);
 	}
 
 }

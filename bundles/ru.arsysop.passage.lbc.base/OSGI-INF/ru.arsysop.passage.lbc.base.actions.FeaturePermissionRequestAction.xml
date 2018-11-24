@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="ru.arsysop.passage.lbc.server.base.actions.FeaturePermissionRequestAction">
-   <property name="action" value="checkout"/>
+   <property name="action" value="evaluateConditions"/>
    <service>
       <provide interface="ru.arsysop.passage.lbc.server.ServerRequestAction"/>
    </service>
-   <reference cardinality="1..1" field="licenseConditionMiner" interface="ru.arsysop.passage.lbc.server.base.condition.ServerLicenseConditionMiner" name="licenseConditionMiner"/>
-   <reference cardinality="1..1" field="loggerFactory" interface="org.osgi.service.log.LoggerFactory" name="loggerFactory"/>
-   <implementation class="ru.arsysop.passage.lbc.server.base.actions.FeaturePermissionRequestAction"/>
+   <reference bind="bindLoggerFactory" cardinality="1..1" field="loggerFactory" interface="org.osgi.service.log.LoggerFactory" name="LoggerFactory"/>
+   <implementation class="ru.arsysop.passage.lbc.base.actions.FeaturePermissionRequestAction"/>
+   <reference bind="bindServerConditionEvaluator" cardinality="0..n" interface="ru.arsysop.passage.lic.runtime.ConditionEvaluator" name="ConditionEvaluator" policy="dynamic" unbind="unbindServerConditionEvaluator"/>
 </scr:component>

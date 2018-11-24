@@ -91,6 +91,7 @@
       <plugin id="ru.arsysop.passage.lbc.jetty"/>
       <plugin id="ru.arsysop.passage.lbc.server"/>
       <plugin id="ru.arsysop.passage.lic.runtime"/>
+      <plugin id="ru.arsysop.passage.lic.transport"/>
    </plugins>
 
    <features>

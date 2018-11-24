@@ -93,9 +93,4 @@ public class ServerConditionsMiner implements ConditionMiner {
 		return result;
 	}
 
-	public boolean evaluate(String clientId, String productId, String featureId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

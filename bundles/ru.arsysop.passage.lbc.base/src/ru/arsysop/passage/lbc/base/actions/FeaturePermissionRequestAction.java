@@ -20,40 +20,81 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.log.Logger;
 import org.osgi.service.log.LoggerFactory;
 
-import ru.arsysop.passage.lbc.base.condition.ServerConditionsMiner;
-import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lbc.server.ServerRuntimeRequestParameters;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ru.arsysop.passage.lbc.base.condition.ServerConditionEvaluator;
+import ru.arsysop.passage.lbc.server.ServerRequestAction;
+import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
+import ru.arsysop.passage.lic.runtime.FeaturePermission;
+import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
+import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
+
+/**
+ * According to AccessManager specification implementation of
+ * {@code Iterable<FeaturePermission> evaluateConditions()}
+ * {@link ru.arsysop.passage.lic.runtime.AccessManager}
+ */
 public class FeaturePermissionRequestAction implements ServerRequestAction {
 
-	ServerConditionsMiner licenseConditionMiner;
+	private static final String LICENSING_CONDITION_TYPE_SERVER = "server";
+
+	private static final String LICENSING_CONDITION_TYPE = "licensing.condition.type";
+
+	ServerConditionEvaluator conditionEvaluator;
 
 	LoggerFactory loggerFactory;
 
 	@Override
 	public boolean execute(HttpServletRequest request, HttpServletResponse response) {
 		Logger logger = loggerFactory.getLogger(this.getClass().getName());
-		if (licenseConditionMiner == null) {
-			logger.error("Reference service LicensingComponentAdmin does not recived");
-			return false;
-		}
 		logger.info("[Passage] Execute action: " + this.getClass().getName());
-		String clientId = request.getParameter(ServerRuntimeRequestParameters.CLIENT_ID);
-		String productId = request.getParameter(ServerRuntimeRequestParameters.CLIENT_PRODUCT_ID);
-		String featureId = request.getParameter(ServerRuntimeRequestParameters.CLIENT_FEATURE_ID);
-		boolean result = licenseConditionMiner.evaluate(clientId, productId, featureId);
-		if (!result) {
-			logger.error("[Passage Error] Could not checkout license by param client: " + clientId + " product: "
-					+ productId);
+
+		// get object from request
+
+		TransferObjectDescriptor transferObject = null;
+		ObjectMapper mapper = new ObjectMapper();
+		try (InputStream inputContext = request.getInputStream()) {
+			transferObject = mapper.readValue(inputContext, TransferObjectDescriptor.class);
+			List<ServerConditionDescriptor> descriptors = transferObject.getDescriptors();
+			if (descriptors == null || descriptors.isEmpty()) {
+				String message = "[Passage] " + this.getClass().getName() + " conditions for evaluate not defined.";
+				response.getWriter().println(message);
+				logger.error(message);
+				return false;
+			}
+
+			@SuppressWarnings("unchecked")
+			Iterable<FeaturePermission> evaluateConditions = conditionEvaluator
+					.evaluateConditions((List<ConditionDescriptor>) (Object) descriptors);
+
+		} catch (Exception e) {
+			logger.info(e.getMessage());
 		}
 
-		return result;
+		return false;
 	}
 
+	public void bindServerConditionEvaluator(ConditionEvaluator evaluator, Map<String, String> context) {
+		String conditionType = context.get(LICENSING_CONDITION_TYPE);
+		if (conditionType.equals(LICENSING_CONDITION_TYPE_SERVER)) {
+			if (evaluator instanceof ServerConditionEvaluator) {
+				conditionEvaluator = (ServerConditionEvaluator) evaluator;
+			}
+		}
+	}
+
+	public void unbindServerConditionEvaluator(ConditionEvaluator evaluator, Map<String, String> context) {
+		conditionEvaluator = null;
+	}
 }
