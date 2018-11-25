@@ -29,7 +29,7 @@
 	<parent>
 		<groupId>ru.arsysop.passage.lbc</groupId>
 		<artifactId>ru.arsysop.passage.lbc.parent</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 		<relativePath>../../releng/ru.arsysop.passage.lbc.parent</relativePath>
 	</parent>
 	<modules>
@@ -41,6 +41,7 @@
 		<module>../../bundles/ru.arsysop.passage.lbc.jetty</module>
 		<module>../../bundles/ru.arsysop.passage.lbc.base</module>
 		<module>../../bundles/ru.arsysop.passage.lbc.application</module>
+		<module>../../bundles/ru.arsysop.passage.lic.transport</module>
 		<!--test-->
 		<module>../../tests/ru.arsysop.passage.lbc.server.test</module>
 		<!--features-->

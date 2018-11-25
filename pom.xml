@@ -30,7 +30,7 @@
 	<parent>
 		<groupId>ru.arsysop.passage.lbc</groupId>
 		<artifactId>ru.arsysop.passage.lbc.parent</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 		<relativePath>./releng/ru.arsysop.passage.lbc.parent</relativePath>
 	</parent>
 
