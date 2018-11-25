@@ -60,8 +60,6 @@ public class ServerConditionMinerTests {
 		List<ConditionDescriptor> conditions = StreamSupport.stream(descriptors.spliterator(), false)
 				.collect(Collectors.toList());
 		Assert.assertTrue(!conditions.isEmpty());
-
-		// evaluate
 	}
 
 }

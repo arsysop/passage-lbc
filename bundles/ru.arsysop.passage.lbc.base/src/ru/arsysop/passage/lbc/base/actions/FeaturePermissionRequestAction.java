@@ -38,6 +38,7 @@ import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
 import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
+import ru.arsysop.passage.lic.transport.ServerFeaturePermission;
 import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 
 /**
@@ -48,7 +49,6 @@ import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 public class FeaturePermissionRequestAction implements ServerRequestAction {
 
 	private static final String LICENSING_CONDITION_TYPE_SERVER = "server";
-
 	private static final String LICENSING_CONDITION_TYPE = "licensing.condition.type";
 
 	ServerConditionEvaluator conditionEvaluator;
@@ -75,14 +75,20 @@ public class FeaturePermissionRequestAction implements ServerRequestAction {
 			}
 
 			@SuppressWarnings("unchecked")
-			Iterable<FeaturePermission> evaluateConditions = conditionEvaluator
+			Iterable<FeaturePermission> evaluatePermissions = conditionEvaluator
 					.evaluateConditions((List<ConditionDescriptor>) (Object) descriptors);
-
+			TransferObjectDescriptor responseTransferObject = new TransferObjectDescriptor();
+			for (FeaturePermission permission : evaluatePermissions) {
+				if (permission instanceof ServerFeaturePermission) {
+					responseTransferObject.addPermission((ServerFeaturePermission) permission);
+				}
+			}
+			RequestActionUtil.responseProcessing(response, responseTransferObject);
 		} catch (Exception e) {
 			logger.info(e.getMessage());
+			return false;
 		}
-
-		return false;
+		return true;
 	}
 
 	public void bindServerConditionEvaluator(ConditionEvaluator evaluator, Map<String, String> context) {

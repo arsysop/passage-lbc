@@ -21,7 +21,6 @@
 package ru.arsysop.passage.lbc.base.actions;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.osgi.service.log.Logger;
 import org.osgi.service.log.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
@@ -43,14 +38,12 @@ import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
 import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 
 /**
- * According to AccessManager specification implementation of 
+ * According to AccessManager specification implementation of
  * {@code Iterable<ConditionDescriptor> extractConditions(Object configuration)}
  * {@link ru.arsysop.passage.lic.runtime.AccessManager}
  */
 public class ConditionDescriptorRequestAction implements ServerRequestAction {
 
-	private static final String CHARSET_UTF_8 = "UTF-8"; // NLS-$1
-	private static final String APPLICATION_JSON = "application/json";
 	private static final String MSG_LOG = "Execute action class:";
 
 	private Logger logger;
@@ -69,26 +62,14 @@ public class ConditionDescriptorRequestAction implements ServerRequestAction {
 		logger.info(MSG_LOG + this.getClass().getName());
 
 		TransferObjectDescriptor transportObject = createTransportObject();
-		boolean responseResult = responseProcessing(response, transportObject);
-		return responseResult;
-	}
-
-	private boolean responseProcessing(HttpServletResponse response, TransferObjectDescriptor transportObject) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		try {
-			PrintWriter printerWriter = response.getWriter();
-			response.setContentType(APPLICATION_JSON);
-			response.setCharacterEncoding(CHARSET_UTF_8);
-			printerWriter.print(mapper.writeValueAsString(transportObject));
-			printerWriter.flush();
-			return true;
-		} catch (JsonProcessingException e) {
-			logger.error(e.getMessage());
+			RequestActionUtil.responseProcessing(response, transportObject);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
+			return false;
 		}
-		return false;
+
+		return true;
 	}
 
 	private TransferObjectDescriptor createTransportObject() {

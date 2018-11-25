@@ -5,4 +5,5 @@
       <provide interface="ru.arsysop.passage.lic.runtime.ConditionEvaluator"/>
    </service>
    <property name="licensing.condition.type" type="String" value="server"/>
+   <reference bind="bindConditionMiner" cardinality="0..n" interface="ru.arsysop.passage.lic.runtime.ConditionMiner" name="ServerConditionMiner" policy="static" unbind="unbindConditionMiner"/>
 </scr:component>

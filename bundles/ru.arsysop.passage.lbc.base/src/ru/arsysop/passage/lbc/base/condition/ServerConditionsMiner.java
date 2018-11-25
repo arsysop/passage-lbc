@@ -33,7 +33,6 @@ import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
 import ru.arsysop.passage.lbc.server.ServerRuntimeRequestParameters;
 
-
 public class ServerConditionsMiner implements ConditionMiner {
 
 	List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
@@ -52,7 +51,7 @@ public class ServerConditionsMiner implements ConditionMiner {
 		this.logger = null;
 	}
 
-	public void bindLicensingComponent(LicensingConditionStorage conditionStorage, Map<String, String> context) {
+	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage, Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
 		String conditions = context.get(ServerRuntimeRequestParameters.LICENSING_DATA);
@@ -68,7 +67,8 @@ public class ServerConditionsMiner implements ConditionMiner {
 		}
 	}
 
-	public void unbindLicensingComponent(LicensingConditionStorage conditionStorage, Map<String, String> context) {
+	public void unbindLicensingConditionStorage(LicensingConditionStorage conditionStorage,
+			Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
 		String conditions = context.get(ServerRuntimeRequestParameters.LICENSING_DATA);
