@@ -32,7 +32,9 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<repository location="http://dl.bintray.com/arsysop/passage-lic/0.3.0/"/>
-			<unit id="ru.arsysop.passage.lic.equinox.feature.feature.group" version="0.0.0"/>
+			<unit id="ru.arsysop.passage.lic.equinox.feature.feature.group" version="0.3.0.201811211900"/>
+			<unit id="ru.arsysop.passage.lic.bc.feature.feature.group" version="0.3.0.201811211900"/>
+			<unit id="ru.arsysop.passage.lic.net.feature.feature.group" version="0.3.0.201811211900"/>
 		</location>
 	</locations>
 </target>
