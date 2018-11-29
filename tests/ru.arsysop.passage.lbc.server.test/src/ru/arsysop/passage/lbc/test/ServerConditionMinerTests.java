@@ -31,8 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
-import ru.arsysop.passage.lic.transport.RequestClientEngine;
-import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
+import ru.arsysop.passage.lic.transport.RequestProducer;
+import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
 
 public class ServerConditionMinerTests {
 	private final String HOST_NUM = "localhost";
@@ -40,12 +40,12 @@ public class ServerConditionMinerTests {
 	private final String MODE_ID = "client";
 
 	private CloseableHttpClient httpClient;
-	private RequestClientEngine requestEngine;
+	private RequestProducer requestEngine;
 
 	@Before
 	public void preprocesingTest() {
 		httpClient = HttpClients.createDefault();
-		requestEngine = new RequestClientEngine();
+		requestEngine = new RequestProducer();
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class ServerConditionMinerTests {
 		Assert.assertNotNull(requestAttributes);
 
 		HttpHost host = HttpHost.create(HOST_NUM + ":" + PORT_NUM);
-		Iterable<ServerConditionDescriptor> descriptors = requestEngine.extractConditionsRequest(httpClient, host,
+		Iterable<FloatingConditionDescriptor> descriptors = requestEngine.extractConditionsRequest(httpClient, host,
 				requestAttributes);
 		List<ConditionDescriptor> conditions = StreamSupport.stream(descriptors.spliterator(), false)
 				.collect(Collectors.toList());

@@ -52,6 +52,8 @@ public class RequestClientEngine {
 	private static final String CHARSET_UTF_8 = "UTF-8"; // NLS-$1
 	private static final String APPLICATION_JSON = "application/json"; // NLS-$1
 
+	public static final String PARAMETER_CONFIGURATION = "configuration";
+
 	private final Logger logger = Logger.getLogger(RequestClientEngine.class.getName());
 
 	public Map<String, String> initRequestParams(String host, String port, String modeId) {

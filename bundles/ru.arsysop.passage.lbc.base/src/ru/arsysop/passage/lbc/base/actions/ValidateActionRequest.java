@@ -23,14 +23,11 @@ package ru.arsysop.passage.lbc.base.actions;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.log.Logger;
-import org.osgi.service.log.LoggerFactory;
-
+import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 
-public class ValidateActionRequest implements ServerRequestAction {
+public class ValidateActionRequest extends BaseComponent implements ServerRequestAction {
 
-	private Logger logger;
 	private static final String MSG_LOG = "Execute action class:";
 
 	@Override
@@ -39,13 +36,5 @@ public class ValidateActionRequest implements ServerRequestAction {
 			logger.info(MSG_LOG + this.getClass().getName());
 		}
 		return false;
-	}
-
-	public void bindLogger(LoggerFactory loggerFactory) {
-		this.logger = loggerFactory.getLogger(this.getClass().getName());
-	}
-
-	public void unbindLogger(LoggerFactory loggerFactory) {
-		this.logger = null;
 	}
 }

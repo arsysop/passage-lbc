@@ -4,7 +4,7 @@
    <service>
       <provide interface="ru.arsysop.passage.lbc.server.ServerRequestAction"/>
    </service>
-   <reference bind="bindLoggerFactory" cardinality="1..1" field="loggerFactory" interface="org.osgi.service.log.LoggerFactory" name="LoggerFactory"/>
+   <reference bind="bindLogger" cardinality="1..1" interface="org.osgi.service.log.LoggerFactory" name="LoggerFactory" policy="static" unbind="unbindLogger"/>
    <implementation class="ru.arsysop.passage.lbc.base.actions.FeaturePermissionRequestAction"/>
    <reference bind="bindServerConditionEvaluator" cardinality="0..n" interface="ru.arsysop.passage.lic.runtime.ConditionEvaluator" name="ConditionEvaluator" policy="dynamic" unbind="unbindServerConditionEvaluator"/>
 </scr:component>

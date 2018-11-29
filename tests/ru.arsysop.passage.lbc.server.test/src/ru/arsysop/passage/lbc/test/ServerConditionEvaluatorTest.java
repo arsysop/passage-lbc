@@ -33,9 +33,9 @@ import org.junit.Test;
 
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
-import ru.arsysop.passage.lic.transport.RequestClientEngine;
-import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
-import ru.arsysop.passage.lic.transport.ServerFeaturePermission;
+import ru.arsysop.passage.lic.transport.RequestProducer;
+import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
+import ru.arsysop.passage.lic.transport.FloatingFeaturePermission;
 
 public class ServerConditionEvaluatorTest {
 
@@ -44,12 +44,12 @@ public class ServerConditionEvaluatorTest {
 	private final String MODE_ID = "client";
 
 	private CloseableHttpClient httpClient;
-	private RequestClientEngine requestEngine;
+	private RequestProducer requestEngine;
 
 	@Before
 	public void preprocesingTest() {
 		httpClient = HttpClients.createDefault();
-		requestEngine = new RequestClientEngine();
+		requestEngine = new RequestProducer();
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class ServerConditionEvaluatorTest {
 		Assert.assertNotNull(requestAttributes);
 
 		HttpHost host = HttpHost.create(HOST_NUM + ":" + PORT_NUM);
-		Iterable<ServerFeaturePermission> descriptors = requestEngine.evaluateConditionsRequest(httpClient, host,
+		Iterable<FloatingFeaturePermission> descriptors = requestEngine.evaluateConditionsRequest(httpClient, host,
 				requestAttributes, getConditionsStub());
 		List<FeaturePermission> conditions = StreamSupport.stream(descriptors.spliterator(), false)
 				.collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class ServerConditionEvaluatorTest {
 	}
 
 	private Iterable<ConditionDescriptor> getConditionsStub() {
-		ConditionDescriptor someDescriptor = new ServerConditionDescriptor("featureA", "", "", "", "");
+		ConditionDescriptor someDescriptor = new FloatingConditionDescriptor("featureA", "", "", "", "");
 		ArrayList<ConditionDescriptor> arrayList = new ArrayList<>();
 		arrayList.add(someDescriptor);
 

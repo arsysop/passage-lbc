@@ -30,11 +30,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 
-public class RequestActionUtil {
+public class RequestActionJsonUtil {
 	private static final String CHARSET_UTF_8 = "UTF-8"; // NLS-$1
-	private static final String APPLICATION_JSON = "application/json";
+	private static final String APPLICATION_JSON = "application/json"; // NLS-$1
 
-	public static void responseProcessing(HttpServletResponse response, TransferObjectDescriptor transportObject) throws IOException {
+	public static void responseProcessing(HttpServletResponse response, TransferObjectDescriptor transportObject)
+			throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 

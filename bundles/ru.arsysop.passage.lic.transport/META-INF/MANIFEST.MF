@@ -7,12 +7,12 @@ Bundle-Vendor: %Bundle-Vendor
 Automatic-Module-Name: ru.arsysop.passage.lic.transport
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: ru.arsysop.passage.lbc.server,
- ru.arsysop.passage.lic.runtime,
- org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore,
+ ru.arsysop.passage.lic.runtime;bundle-version="0.0.0",
+ org.apache.httpcomponents.httpclient;bundle-version="0.0.0",
+ org.apache.httpcomponents.httpcore;bundle-version="0.0.0",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.2",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.9.2",
- org.eclipse.jetty.http,
- ru.arsysop.passage.lic.base
+ org.eclipse.jetty.http;bundle-version="0.0.0",
+ ru.arsysop.passage.lic.base;bundle-version="0.0.0"
 Export-Package: ru.arsysop.passage.lic.transport

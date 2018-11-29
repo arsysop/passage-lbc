@@ -24,37 +24,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.osgi.service.log.Logger;
-import org.osgi.service.log.LoggerFactory;
-
+import ru.arsysop.passage.lbc.base.BaseComponent;
+import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
+import ru.arsysop.passage.lic.transport.RequestParameters;
 
-import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lbc.server.ServerRuntimeRequestParameters;
-
-public class ServerConditionsMiner implements ConditionMiner {
+public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
 
 	List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
-	private Logger logger;
 
 	public boolean checkProductById(String productId) {
-
 		return false;
-	}
-
-	public void bindLogger(LoggerFactory loggerFactory) {
-		this.logger = loggerFactory.getLogger(this.getClass().getName());
-	}
-
-	public void unbindLogger(LoggerFactory loggerFactory) {
-		this.logger = null;
 	}
 
 	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage, Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(ServerRuntimeRequestParameters.LICENSING_DATA);
+		String conditions = context.get(RequestParameters.LICENSING_DATA);
 
 		if (conditions != null && !conditions.isEmpty()) {
 			String conditionDatas[] = conditions.split(",");
@@ -71,7 +58,7 @@ public class ServerConditionsMiner implements ConditionMiner {
 			Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(ServerRuntimeRequestParameters.LICENSING_DATA);
+		String conditions = context.get(RequestParameters.LICENSING_DATA);
 
 		if (conditions != null && !conditions.isEmpty()) {
 			String conditionDatas[] = conditions.split(",");
@@ -87,6 +74,14 @@ public class ServerConditionsMiner implements ConditionMiner {
 	@Override
 	public Iterable<ConditionDescriptor> extractConditionDescriptors(Object configuration) {
 		List<ConditionDescriptor> result = new ArrayList<>();
+	
+		// go to arbitr 
+		// licenseIdentifier - from client in request
+		// reserveLicenseCondition(String licenseIdentifier);  
+		
+		// 
+		
+		
 		for (LicensingConditionStorage storage : conditionStorages) {
 			result.addAll(storage.getConditionDescriptors());
 		}

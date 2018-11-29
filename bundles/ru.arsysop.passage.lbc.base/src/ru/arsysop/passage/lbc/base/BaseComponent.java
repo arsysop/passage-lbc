@@ -18,26 +18,20 @@
  * Contributors:
  *     ArSysOp - initial API and implementation
  *******************************************************************************/
+package ru.arsysop.passage.lbc.base;
 
-package ru.arsysop.passage.lbc.server;
+import org.osgi.service.log.Logger;
+import org.osgi.service.log.LoggerFactory;
 
-public class ServerRuntimeRequestParameters {
+public abstract class BaseComponent {
 
-	
-	public static final String CLIENT_ID = "user";
-	public static final String CLIENT_PRODUCT_ID = "product";
-	public static final String CLIENT_FEATURE_ID = "feature";
-	public static final String CLIENT_COMPONENT_ID = "component";
-	public static final String CLIENT_TRUSTED_ID = "clienttrustid";
-	
-	public static final String SERVER_ACTION_ID = "action";
-	public static final String SERVER_ACCESS_MODE_ID = "accessmode";
-	public static final String SERVER_HANDLER_ID = "handler";
-	
-	public static final String LICENSING_DATA = "licensingData";
-	public static final String PROTOCOL_TYPE_ID = "http";
-	public static final String HOST = "host";
-	public static final String PORT = "port";
-	
+	protected Logger logger;
 
+	protected void bindLogger(LoggerFactory loggerFactory) {
+		logger = loggerFactory.getLogger(this.getClass().getName());
+	}
+
+	protected void unbindLogger(LoggerFactory loggerFactory) {
+		logger = null;
+	}
 }

@@ -20,21 +20,20 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
+import static ru.arsysop.passage.lic.transport.RequestProducer.PARAMETER_CONFIGURATION;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.log.Logger;
-import org.osgi.service.log.LoggerFactory;
-
+import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.transport.ServerConditionDescriptor;
+import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
 import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 
 /**
@@ -42,11 +41,11 @@ import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
  * {@code Iterable<ConditionDescriptor> extractConditions(Object configuration)}
  * {@link ru.arsysop.passage.lic.runtime.AccessManager}
  */
-public class ConditionDescriptorRequestAction implements ServerRequestAction {
+public class ConditionDescriptorRequestAction extends BaseComponent implements ServerRequestAction {
 
-	private static final String MSG_LOG = "Execute action class:";
+	private static final String ERROR_CONDITIONS_NOT_AVAILABLE = "No condition miners available";
 
-	private Logger logger;
+	private static final String MSG_LOG = "Executing action request from class: %s";
 
 	private List<ConditionMiner> licenseConditionMiners = new ArrayList<>();
 
@@ -55,49 +54,41 @@ public class ConditionDescriptorRequestAction implements ServerRequestAction {
 		if (logger == null) {
 			return false;
 		}
-		if (licenseConditionMiners == null || licenseConditionMiners.isEmpty()) {
-			logger.error(ConditionMiner.class.getName() + " miners not available or defined");
+		logger.info(String.format(MSG_LOG, this.getClass().getName()));
+		if (licenseConditionMiners.isEmpty()) {
+			logger.error(ERROR_CONDITIONS_NOT_AVAILABLE);
 			return false;
 		}
-		logger.info(MSG_LOG + this.getClass().getName());
-
-		TransferObjectDescriptor transportObject = createTransportObject();
 		try {
-			RequestActionUtil.responseProcessing(response, transportObject);
+			String configuration = request.getParameter(PARAMETER_CONFIGURATION);
+			TransferObjectDescriptor transportObject = createTransportObject(configuration);
+			RequestActionJsonUtil.responseProcessing(response, transportObject);
+			return true;
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			return false;
 		}
-
-		return true;
+		return false;
 	}
 
-	private TransferObjectDescriptor createTransportObject() {
+	private TransferObjectDescriptor createTransportObject(Object configuration) {
 		TransferObjectDescriptor transportObject = new TransferObjectDescriptor();
 
 		for (ConditionMiner miner : licenseConditionMiners) {
-			Iterable<ConditionDescriptor> extractConditionDescriptors = miner.extractConditionDescriptors(null);
+			Iterable<ConditionDescriptor> extractConditionDescriptors = miner
+					.extractConditionDescriptors(configuration);
 			for (ConditionDescriptor descriptor : extractConditionDescriptors) {
-				transportObject.addDescriptor((ServerConditionDescriptor) descriptor);
+				transportObject.addDescriptor((FloatingConditionDescriptor) descriptor);
 			}
 		}
 
 		return transportObject;
 	}
 
-	public void bindLogger(LoggerFactory loggerFactory) {
-		this.logger = loggerFactory.getLogger(this.getClass().getName());
-	}
-
-	public void unbindLogger(LoggerFactory loggerFactory) {
-		this.logger = null;
-	}
-
-	public void bindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
+	public void bindConditionMiner(ConditionMiner conditionMiner) {
 		this.licenseConditionMiners.add(conditionMiner);
 	}
 
-	public void unbindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
+	public void unbindConditionMiner(ConditionMiner conditionMiner) {
 		this.licenseConditionMiners.remove(conditionMiner);
 	}
 

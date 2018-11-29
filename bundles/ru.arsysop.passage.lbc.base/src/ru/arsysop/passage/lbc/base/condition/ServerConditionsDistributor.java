@@ -22,38 +22,73 @@ package ru.arsysop.passage.lbc.base.condition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import ru.arsysop.passage.lbc.base.BaseComponent;
+import ru.arsysop.passage.lic.net.TimeConditions;
 import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
-import ru.arsysop.passage.lic.transport.ServerFeaturePermission;
+import ru.arsysop.passage.lic.transport.FloatingFeaturePermission;
 
-public class ServerConditionEvaluator implements ConditionEvaluator {
+public class ServerConditionsDistributor extends BaseComponent implements ConditionEvaluator {
 
 	List<ConditionMiner> miners = new ArrayList<>();
 	List<ConditionDescriptor> lockedConditions = new ArrayList<>();
+	List<ConditionTimerTask> conditionTasks = new ArrayList<>();
 
 	@Override
 	public Iterable<FeaturePermission> evaluateConditions(Iterable<ConditionDescriptor> conditions) {
-		List<FeaturePermission> permitions = new ArrayList<>();
+		List<FeaturePermission> permissionsResult = new ArrayList<>();
 
 		for (ConditionDescriptor condition : conditions) {
 			boolean conditionExists = checkExistense(condition);
 			if (conditionExists) {
-				boolean conditionIsLocked = lockedConditions.contains(condition);
-				if (!conditionIsLocked) {
-					FeaturePermission createFeaturePermition = createFeaturePermission(condition);
-					permitions.add(createFeaturePermition);
-					lockCondition(condition);
+
+				synchronized (condition) {
+
+					// lease on time period
+					if (condition.getConditionType() == TimeConditions.CONDITION_TYPE_TIME) {
+
+						boolean conditionIsLocked = lockedConditions.contains(condition);
+						if (!conditionIsLocked) {
+							FeaturePermission createFeaturePermition = createFeaturePermission(condition);
+							launchFeaturePermissionTask(condition, createFeaturePermition);
+							lockCondition(condition);
+							permissionsResult.add(createFeaturePermition);
+						}
+					}
 				}
+
 			}
 		}
-		return permitions;
+		return permissionsResult;
 	}
 
-	private void lockCondition(ConditionDescriptor condition) {
+	private void launchFeaturePermissionTask(ConditionDescriptor condition, FeaturePermission createFeaturePermition) {
+
+		String conditionLeaseTime = condition.getConditionExpression();
+
+		ConditionTimerTask task = new ConditionTimerTask(conditionLeaseTime) {
+
+			@Override
+			void timeExpired() {
+				unlockCondition(condition);
+			}
+		};
+		
+		conditionTasks.add(task);
+
+		task.run();
+	}
+
+	private synchronized void unlockCondition(ConditionDescriptor condition) {
+		if (lockedConditions.contains(condition)) {
+			lockedConditions.remove(condition);
+		}
+	}
+
+	private synchronized void lockCondition(ConditionDescriptor condition) {
 		lockedConditions.add(condition);
 	}
 
@@ -63,7 +98,7 @@ public class ServerConditionEvaluator implements ConditionEvaluator {
 		String featureId = condition.getAllowedFeatureId();
 		String matchVersion = condition.getAllowedMatchVersion();
 		String matchRule = condition.getAllowedMatchRule();
-		ServerFeaturePermission permission = new ServerFeaturePermission(featureId, matchVersion, matchRule, leaseTime,
+		FloatingFeaturePermission permission = new FloatingFeaturePermission(featureId, matchVersion, matchRule, leaseTime,
 				expireTime);
 		return (FeaturePermission) permission;
 
@@ -80,16 +115,15 @@ public class ServerConditionEvaluator implements ConditionEvaluator {
 		return false;
 	}
 
-	public void bindConditionMiner(ConditionMiner miner, Map<String, String> context) {
+	public void bindConditionMiner(ConditionMiner miner) {
 		if (!miners.contains(miner)) {
 			miners.add(miner);
 		}
 	}
 
-	public void unbindConditionMiner(ConditionMiner miner, Map<String, String> context) {
+	public void unbindConditionMiner(ConditionMiner miner) {
 		if (miners.contains(miner)) {
 			miners.remove(miner);
 		}
 	}
-
 }

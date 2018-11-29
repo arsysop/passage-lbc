@@ -14,7 +14,7 @@ Require-Bundle: javax.servlet,
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.9.2",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.2",
- ru.arsysop.passage.lic.transport
+ ru.arsysop.passage.lic.net
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 

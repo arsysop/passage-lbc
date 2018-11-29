@@ -32,7 +32,7 @@ import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
 import ru.arsysop.passage.lbc.server.ServerRequestHandler;
 import ru.arsysop.passage.lbc.server.ServerRunner;
-import ru.arsysop.passage.lbc.server.ServerRuntimeRequestParameters;
+import ru.arsysop.passage.lic.transport.RequestParameters;
 
 public class ServerRunnerImpl implements ServerRunner {
 
@@ -43,7 +43,6 @@ public class ServerRunnerImpl implements ServerRunner {
 	private Map<String, ServerRequestHandler> requestHandlers = new HashMap<>();
 	private Map<String, ServerRequestExecutor> requestExecutors = new HashMap<>();
 	private Map<String, ServerRequestAction> requestActions = new HashMap<>();
-	
 
 	private Logger logger;
 
@@ -75,7 +74,7 @@ public class ServerRunnerImpl implements ServerRunner {
 
 	public void bindServerRequestHandler(ServerRequestHandler serverRequestHandler, Map<String, String> context) {
 		logger.debug(String.format(REGISTERED, serverRequestHandler.getClass().getName()));
-		String requestHandlerId = context.get(ServerRuntimeRequestParameters.SERVER_HANDLER_ID);
+		String requestHandlerId = context.get(RequestParameters.SERVER_HANDLER_ID);
 		if (requestHandlerId != null) {
 			requestHandlers.put(requestHandlerId, serverRequestHandler);
 			serverHandler.addServerRequestHandler(serverRequestHandler);
@@ -85,7 +84,7 @@ public class ServerRunnerImpl implements ServerRunner {
 	}
 
 	public void unbindServerRequestHandler(ServerRequestHandler serverRequestHandler, Map<String, String> context) {
-		String requestHandlerId = context.get(ServerRuntimeRequestParameters.SERVER_HANDLER_ID);
+		String requestHandlerId = context.get(RequestParameters.SERVER_HANDLER_ID);
 		if (requestHandlerId != null) {
 			requestHandlers.remove(requestHandlerId, serverRequestHandler);
 			serverHandler.remServerRequestHandler(serverRequestHandler);
@@ -96,7 +95,7 @@ public class ServerRunnerImpl implements ServerRunner {
 
 	public void bindServerRequestExecutor(ServerRequestExecutor serverRequestExecutor, Map<String, String> context) {
 		logger.debug(String.format(REGISTERED, serverRequestExecutor.getClass().getName()));
-		String requestExecutorModeId = context.get(ServerRuntimeRequestParameters.SERVER_ACCESS_MODE_ID);
+		String requestExecutorModeId = context.get(RequestParameters.SERVER_ACCESS_MODE_ID);
 		if (requestExecutorModeId != null) {
 			serverRequestExecutor.setAccessModeId(requestExecutorModeId);
 			if (!requestExecutors.containsKey(requestExecutorModeId)) {
@@ -107,13 +106,13 @@ public class ServerRunnerImpl implements ServerRunner {
 			}
 		} else {
 			logger.error(REQUEST_HANDLER_NOT_FOUND + serverRequestExecutor.toString()
-					+ ServerRuntimeRequestParameters.SERVER_ACCESS_MODE_ID + requestExecutorModeId);
+					+ RequestParameters.SERVER_ACCESS_MODE_ID + requestExecutorModeId);
 			;
 		}
 	}
 
 	public void unbindServerRequestExecutor(ServerRequestExecutor serverRequestExecutor, Map<String, String> context) {
-		String requestExecutorModeId = context.get(ServerRuntimeRequestParameters.SERVER_ACCESS_MODE_ID);
+		String requestExecutorModeId = context.get(RequestParameters.SERVER_ACCESS_MODE_ID);
 		if (requestExecutorModeId != null) {
 			requestExecutors.remove(requestExecutorModeId, serverRequestExecutor);
 			for (Entry<String, ServerRequestHandler> entry : requestHandlers.entrySet()) {
@@ -144,7 +143,7 @@ public class ServerRunnerImpl implements ServerRunner {
 	public void bindServerRequestActions(ServerRequestAction action, Map<String, String> context) {
 		logger.debug(String.format(REGISTERED, action.getClass().getName()));
 
-		String actionId = context.get(ServerRuntimeRequestParameters.SERVER_ACTION_ID);
+		String actionId = context.get(RequestParameters.SERVER_ACTION_ID);
 		if (actionId != null) {
 			if (!this.requestActions.containsKey(actionId)) {
 				this.requestActions.put(actionId, action);
@@ -156,7 +155,7 @@ public class ServerRunnerImpl implements ServerRunner {
 	public void unbindServerRequestActions(ServerRequestAction action, Map<String, String> context) {
 		logger.debug(action.getClass().getName());
 
-		String actionId = context.get(ServerRuntimeRequestParameters.SERVER_ACTION_ID);
+		String actionId = context.get(RequestParameters.SERVER_ACTION_ID);
 		if (actionId != null) {
 			if (this.requestActions.containsKey(actionId)) {
 				this.requestActions.remove(actionId, action);

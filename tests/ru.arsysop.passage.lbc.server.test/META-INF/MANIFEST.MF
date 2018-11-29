@@ -12,5 +12,6 @@ Require-Bundle: org.junit,
  org.apache.commons.logging;bundle-version="1.1.1",
  ru.arsysop.passage.lbc.container,
  ru.arsysop.passage.lic.runtime,
- ru.arsysop.passage.lic.transport
+ ru.arsysop.passage.lbc.server,
+ ru.arsysop.passage.lic.net
 Automatic-Module-Name: ru.arsysop.passage.lbc.server.test
