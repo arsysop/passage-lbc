@@ -30,8 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.base.condition.ServerConditionsDistributor;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lic.internal.net.NetConditionDescriptorTransport;
-import ru.arsysop.passage.lic.internal.net.NetFeaturePermissionTransport;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
