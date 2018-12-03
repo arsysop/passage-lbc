@@ -32,7 +32,7 @@ import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
 import ru.arsysop.passage.lbc.server.ServerRequestHandler;
 import ru.arsysop.passage.lbc.server.ServerRunner;
-import ru.arsysop.passage.lic.transport.RequestParameters;
+import ru.arsysop.passage.lic.net.RequestParameters;
 
 public class ServerRunnerImpl implements ServerRunner {
 

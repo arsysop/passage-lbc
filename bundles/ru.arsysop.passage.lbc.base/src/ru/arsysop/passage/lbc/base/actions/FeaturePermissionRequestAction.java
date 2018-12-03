@@ -20,24 +20,23 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
-import java.io.InputStream;
-import java.util.List;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.base.condition.ServerConditionsDistributor;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.internal.net.NetConditionDescriptorTransport;
+import ru.arsysop.passage.lic.internal.net.NetFeaturePermissionTransport;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
-import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
-import ru.arsysop.passage.lic.transport.FloatingFeaturePermission;
-import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.io.FeaturePermissionTransport;
+import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
 
 /**
  * According to AccessManager specification implementation of
@@ -46,48 +45,61 @@ import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
  */
 public class FeaturePermissionRequestAction extends BaseComponent implements ServerRequestAction {
 
+	private static final String CHARSET_UTF_8 = "UTF-8"; // NLS-$1
+	private static final String APPLICATION_JSON = "application/json"; // NLS-$1
+
 	private static final String CONDITIONS_FOR_EVALUATE_NOT_DEFINED_ERROR = "Conditions for evaluate not defined.";
 	private static final String PASSAGE_EXECUTE_TXT = "[Passage] Execute action: %s ";
 	private static final String LICENSING_CONDITION_TYPE_SERVER = "server";
-	private static final String LICENSING_CONDITION_TYPE = "licensing.condition.type";
+	private static final String LICENSING_CONTENT_TYPE = "licensing.content.type"; // NLS-$1
 
 	ServerConditionsDistributor conditionEvaluator;
+
+	private Map<String, FeaturePermissionTransport> mapPermission2Transport = new HashMap<>();
+	private Map<String, LicensingConditionTransport> mapCondition2Transport = new HashMap<>();
 
 	@Override
 	public boolean execute(HttpServletRequest request, HttpServletResponse response) {
 		logger.info(String.format(PASSAGE_EXECUTE_TXT, this.getClass().getName()));
+		try {
 
-		TransferObjectDescriptor transferObject = null;
-		ObjectMapper mapper = new ObjectMapper();
-		try (InputStream inputContext = request.getInputStream()) {
-			transferObject = mapper.readValue(inputContext, TransferObjectDescriptor.class);
-			List<FloatingConditionDescriptor> descriptors = transferObject.getDescriptors();
-			if (descriptors == null || descriptors.isEmpty()) {
+			String contentType = request.getContentType();
+			LicensingConditionTransport transport = mapCondition2Transport.get(contentType);
+			if (transport == null) {
+				logger.error(String.format("LicensingConditionTransport not defined for contentType: %s", contentType));
+				return false;
+			}
+			Iterable<LicensingCondition> descriptors = transport.readConditionDescriptors(request.getInputStream());
+
+			if (descriptors == null) {
 				response.getWriter().println(CONDITIONS_FOR_EVALUATE_NOT_DEFINED_ERROR);
 				logger.error(CONDITIONS_FOR_EVALUATE_NOT_DEFINED_ERROR);
 				return false;
 			}
 
-			@SuppressWarnings("unchecked")
-			Iterable<FeaturePermission> evaluatePermissions = conditionEvaluator
-					.evaluateConditions((List<ConditionDescriptor>) (Object) descriptors);
-			TransferObjectDescriptor responseTransferObject = new TransferObjectDescriptor();
-			for (FeaturePermission permission : evaluatePermissions) {
-				if (permission instanceof FloatingFeaturePermission) {
-					responseTransferObject.addPermission((FloatingFeaturePermission) permission);
-				}
+			Iterable<FeaturePermission> evaluatePermissions = conditionEvaluator.evaluateConditions(descriptors);
+
+			FeaturePermissionTransport transportPermission = mapPermission2Transport.get(contentType);
+			if (transportPermission == null) {
+				logger.error(String.format("FeaturePermissionTransport not defined for contentType: %s", contentType));
+				return false;
 			}
-			RequestActionJsonUtil.responseProcessing(response, responseTransferObject);
+			transportPermission.writeFeaturePermissions(evaluatePermissions, response.getOutputStream());
+
+			response.setContentType(APPLICATION_JSON);
+			response.setCharacterEncoding(CHARSET_UTF_8);
+			PrintWriter printerWriter = response.getWriter();
+			printerWriter.flush();
 		} catch (Exception e) {
-			logger.info(e.getMessage());
+			logger.error(e.getMessage(), e);
 			return false;
 		}
 		return true;
 	}
 
 	public void bindServerConditionEvaluator(ConditionEvaluator evaluator, Map<String, String> context) {
-		String conditionType = context.get(LICENSING_CONDITION_TYPE);
-		if (conditionType.equals(LICENSING_CONDITION_TYPE_SERVER)) {
+		String conditionType = context.get(LICENSING_CONTENT_TYPE);
+		if (conditionType != null && conditionType.equals(LICENSING_CONDITION_TYPE_SERVER)) {
 			if (evaluator instanceof ServerConditionsDistributor) {
 				conditionEvaluator = (ServerConditionsDistributor) evaluator;
 			}
@@ -95,11 +107,25 @@ public class FeaturePermissionRequestAction extends BaseComponent implements Ser
 	}
 
 	public void unbindServerConditionEvaluator(ConditionEvaluator evaluator, Map<String, String> context) {
-		String conditionType = context.get(LICENSING_CONDITION_TYPE);
+		String conditionType = context.get(LICENSING_CONTENT_TYPE);
 		if (conditionType.equals(LICENSING_CONDITION_TYPE_SERVER)) {
 			if (evaluator instanceof ServerConditionsDistributor) {
 				conditionEvaluator = null;
 			}
+		}
+	}
+
+	public void bindFeaturePermissionTransport(FeaturePermissionTransport transport, Map<String, String> context) {
+		String conditionType = context.get(LICENSING_CONTENT_TYPE);
+		if (conditionType != null) {
+			mapPermission2Transport.put(conditionType, transport);
+		}
+	}
+
+	public void bindLicensingConditionTransport(LicensingConditionTransport transport, Map<String, String> context) {
+		String conditionType = context.get(LICENSING_CONTENT_TYPE);
+		if (conditionType != null) {
+			mapCondition2Transport.put(conditionType, transport);
 		}
 	}
 }

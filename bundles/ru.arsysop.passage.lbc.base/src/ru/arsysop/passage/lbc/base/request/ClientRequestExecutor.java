@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
-import ru.arsysop.passage.lic.transport.RequestParameters;
+import ru.arsysop.passage.lic.net.RequestParameters;
 
 public class ClientRequestExecutor extends BaseComponent implements ServerRequestExecutor {
 

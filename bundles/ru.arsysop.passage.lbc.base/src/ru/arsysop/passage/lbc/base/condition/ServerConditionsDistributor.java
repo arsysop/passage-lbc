@@ -24,24 +24,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
+import ru.arsysop.passage.lic.internal.net.FloatingFeaturePermission;
 import ru.arsysop.passage.lic.net.TimeConditions;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
-import ru.arsysop.passage.lic.transport.FloatingFeaturePermission;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
 
 public class ServerConditionsDistributor extends BaseComponent implements ConditionEvaluator {
 
 	List<ConditionMiner> miners = new ArrayList<>();
-	List<ConditionDescriptor> lockedConditions = new ArrayList<>();
+	List<LicensingCondition> lockedConditions = new ArrayList<>();
 	List<ConditionTimerTask> conditionTasks = new ArrayList<>();
 
 	@Override
-	public Iterable<FeaturePermission> evaluateConditions(Iterable<ConditionDescriptor> conditions) {
+	public Iterable<FeaturePermission> evaluateConditions(Iterable<LicensingCondition> conditions) {
 		List<FeaturePermission> permissionsResult = new ArrayList<>();
 
-		for (ConditionDescriptor condition : conditions) {
+		for (LicensingCondition condition : conditions) {
 			boolean conditionExists = checkExistense(condition);
 			if (conditionExists) {
 
@@ -65,7 +65,7 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 		return permissionsResult;
 	}
 
-	private void launchFeaturePermissionTask(ConditionDescriptor condition, FeaturePermission createFeaturePermition) {
+	private void launchFeaturePermissionTask(LicensingCondition condition, FeaturePermission createFeaturePermition) {
 
 		String conditionLeaseTime = condition.getConditionExpression();
 
@@ -76,37 +76,37 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 				unlockCondition(condition);
 			}
 		};
-		
+
 		conditionTasks.add(task);
 
 		task.run();
 	}
 
-	private synchronized void unlockCondition(ConditionDescriptor condition) {
+	private synchronized void unlockCondition(LicensingCondition condition) {
 		if (lockedConditions.contains(condition)) {
 			lockedConditions.remove(condition);
 		}
 	}
 
-	private synchronized void lockCondition(ConditionDescriptor condition) {
+	private synchronized void lockCondition(LicensingCondition condition) {
 		lockedConditions.add(condition);
 	}
 
-	private FeaturePermission createFeaturePermission(ConditionDescriptor condition) {
+	private FeaturePermission createFeaturePermission(LicensingCondition condition) {
 		long leaseTime = System.currentTimeMillis();
 		long expireTime = leaseTime + 60 * 60 * 1000;
-		String featureId = condition.getAllowedFeatureId();
-		String matchVersion = condition.getAllowedMatchVersion();
-		String matchRule = condition.getAllowedMatchRule();
-		FloatingFeaturePermission permission = new FloatingFeaturePermission(featureId, matchVersion, matchRule, leaseTime,
-				expireTime);
+		String featureId = condition.getFeatureIdentifier();
+		String matchVersion = condition.getMatchVersion();
+		String matchRule = condition.getMatchRule();
+		FloatingFeaturePermission permission = new FloatingFeaturePermission(featureId, matchVersion, matchRule,
+				leaseTime, expireTime);
 		return (FeaturePermission) permission;
 
 	}
 
-	private boolean checkExistense(ConditionDescriptor condition) {
+	private boolean checkExistense(LicensingCondition condition) {
 		for (ConditionMiner miner : miners) {
-			for (ConditionDescriptor extractedCondition : miner.extractConditionDescriptors(null)) {
+			for (LicensingCondition extractedCondition : miner.extractLicensingConditions(condition)) {
 				if (condition.equals(extractedCondition)) {
 					return true;
 				}
@@ -126,4 +126,5 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 			miners.remove(miner);
 		}
 	}
+
 }

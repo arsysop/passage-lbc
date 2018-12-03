@@ -6,4 +6,5 @@
    <service>
       <provide interface="ru.arsysop.passage.lic.runtime.ConditionMiner"/>
    </service>
+   <property name="miner.type" type="String" value="server.miner"/>
 </scr:component>

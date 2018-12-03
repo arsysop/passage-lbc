@@ -25,12 +25,11 @@ import java.util.List;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
-import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
+import ru.arsysop.passage.lic.base.BaseLicensingCondition;
 
 public class ServerConditionsStorage extends BaseComponent implements LicensingConditionStorage {
 
-	List<ConditionDescriptor> listConditionDescriptors = new ArrayList<>();
+	List<BaseLicensingCondition> listConditionDescriptors = new ArrayList<>();
 
 	private final static String SPLITTER = ";";
 
@@ -38,13 +37,13 @@ public class ServerConditionsStorage extends BaseComponent implements LicensingC
 	public void createConditionDescriptors(String conditionValues) {
 		String[] values = conditionValues.split(SPLITTER);
 		if (values.length == 4) {
-			ConditionDescriptor descriptor = new FloatingConditionDescriptor(values[1], "", "", "", "");
+			BaseLicensingCondition descriptor = new BaseLicensingCondition(values[1], "", "", "", "");
 			listConditionDescriptors.add(descriptor);
 		}
 	}
 
 	@Override
-	public List<ConditionDescriptor> getConditionDescriptors() {
+	public List<BaseLicensingCondition> getLicensingCondition() {
 		return listConditionDescriptors;
 	}
 

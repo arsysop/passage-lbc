@@ -20,21 +20,22 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
-import static ru.arsysop.passage.lic.transport.RequestProducer.PARAMETER_CONFIGURATION;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.net.RequestParameters;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
-import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
 
 /**
  * According to AccessManager specification implementation of
@@ -44,10 +45,15 @@ import ru.arsysop.passage.lic.transport.TransferObjectDescriptor;
 public class ConditionDescriptorRequestAction extends BaseComponent implements ServerRequestAction {
 
 	private static final String ERROR_CONDITIONS_NOT_AVAILABLE = "No condition miners available";
-
 	private static final String MSG_LOG = "Executing action request from class: %s";
+	private static final String PARAMETER_CONFIGURATION = "configuration";
+
+	private static final String APPLICATION_JSON = "application/json"; // NLS-$1
+	private static final String LICENSING_CONTENT_TYPE = "licensing.content.type"; // NLS-$1
+	private static final String MINER_TYPE_KEY = "miner.type";// NLS-$1
 
 	private List<ConditionMiner> licenseConditionMiners = new ArrayList<>();
+	private Map<String, LicensingConditionTransport> mapCondition2Transport = new HashMap<>();
 
 	@Override
 	public boolean execute(HttpServletRequest request, HttpServletResponse response) {
@@ -61,8 +67,23 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 		}
 		try {
 			String configuration = request.getParameter(PARAMETER_CONFIGURATION);
-			TransferObjectDescriptor transportObject = createTransportObject(configuration);
-			RequestActionJsonUtil.responseProcessing(response, transportObject);
+			Collection<LicensingCondition> resultConditions = new ArrayList<>();
+
+			for (ConditionMiner miner : licenseConditionMiners) {
+				Iterable<LicensingCondition> descriptors = miner.extractLicensingConditions(configuration);
+
+				resultConditions.addAll((Collection<? extends LicensingCondition>) descriptors);
+			}
+			String contentType = request.getParameter(RequestParameters.CONTENT_TYPE);
+			LicensingConditionTransport transport = mapCondition2Transport.get(contentType);
+			if (transport == null) {
+				logger.error(String.format("LicensingConditionTransport not defined for contentType: %s", contentType));
+				return false;
+			}
+
+			transport.writeConditionDescriptors(resultConditions, response.getOutputStream());
+			response.setContentType(APPLICATION_JSON);
+
 			return true;
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -70,26 +91,22 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 		return false;
 	}
 
-	private TransferObjectDescriptor createTransportObject(Object configuration) {
-		TransferObjectDescriptor transportObject = new TransferObjectDescriptor();
+	public void bindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
 
-		for (ConditionMiner miner : licenseConditionMiners) {
-			Iterable<ConditionDescriptor> extractConditionDescriptors = miner
-					.extractConditionDescriptors(configuration);
-			for (ConditionDescriptor descriptor : extractConditionDescriptors) {
-				transportObject.addDescriptor((FloatingConditionDescriptor) descriptor);
-			}
+		String minerType = context.get(MINER_TYPE_KEY);
+		if (minerType != null && minerType.equals("server.miner")) {
+			this.licenseConditionMiners.add(conditionMiner);
 		}
-
-		return transportObject;
 	}
 
-	public void bindConditionMiner(ConditionMiner conditionMiner) {
-		this.licenseConditionMiners.add(conditionMiner);
-	}
-
-	public void unbindConditionMiner(ConditionMiner conditionMiner) {
+	public void unbindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
 		this.licenseConditionMiners.remove(conditionMiner);
 	}
 
+	public void bindLicensingConditionTransport(LicensingConditionTransport transport, Map<String, String> context) {
+		String conditionType = context.get(LICENSING_CONTENT_TYPE);
+		if (conditionType != null) {
+			mapCondition2Transport.put(conditionType, transport);
+		}
+	}
 }

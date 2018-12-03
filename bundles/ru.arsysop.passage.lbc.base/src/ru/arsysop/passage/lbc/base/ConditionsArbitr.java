@@ -3,27 +3,27 @@ package ru.arsysop.passage.lbc.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.base.BaseLicensingCondition;
 
 public class ConditionsArbitr {
 
 	/**
 	 * Descriptors reserved on a minute
 	 */
-	List<ConditionDescriptor> reservedDescriptors = new ArrayList<>();
+	List<BaseLicensingCondition> reservedDescriptors = new ArrayList<>();
 
 	/**
 	 * Descriptors in lease on an hour
 	 */
-	List<ConditionDescriptor> leasedDescriptors = new ArrayList<>();
+	List<BaseLicensingCondition> leasedDescriptors = new ArrayList<>();
 
-	public boolean reservCondition(ConditionDescriptor descriptor) {
-		
+	public boolean reservCondition(BaseLicensingCondition descriptor) {
+
 		return false;
 	}
 
-	public boolean leaseCondition(ConditionDescriptor descriptor) {
-		
+	public boolean leaseCondition(BaseLicensingCondition descriptor) {
+
 		return false;
 	}
 

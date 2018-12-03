@@ -14,7 +14,8 @@ Require-Bundle: javax.servlet,
  ru.arsysop.passage.lic.runtime,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2",
- ru.arsysop.passage.lic.net
+ ru.arsysop.passage.lic.net,
+ ru.arsysop.passage.lic.base
 Automatic-Module-Name: ru.arsysop.passage.licensing.server
 
 

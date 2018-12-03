@@ -26,12 +26,13 @@ import java.util.Map;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.transport.RequestParameters;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
 
 public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
 
+	private static final Object LICENSING_DATA = "licensingData";
 	List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
 
 	public boolean checkProductById(String productId) {
@@ -41,7 +42,7 @@ public class ServerConditionsMiner extends BaseComponent implements ConditionMin
 	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage, Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(RequestParameters.LICENSING_DATA);
+		String conditions = context.get(LICENSING_DATA);
 
 		if (conditions != null && !conditions.isEmpty()) {
 			String conditionDatas[] = conditions.split(",");
@@ -58,7 +59,7 @@ public class ServerConditionsMiner extends BaseComponent implements ConditionMin
 			Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(RequestParameters.LICENSING_DATA);
+		String conditions = context.get(LICENSING_DATA);
 
 		if (conditions != null && !conditions.isEmpty()) {
 			String conditionDatas[] = conditions.split(",");
@@ -72,18 +73,17 @@ public class ServerConditionsMiner extends BaseComponent implements ConditionMin
 	}
 
 	@Override
-	public Iterable<ConditionDescriptor> extractConditionDescriptors(Object configuration) {
-		List<ConditionDescriptor> result = new ArrayList<>();
-	
-		// go to arbitr 
+	public Iterable<LicensingCondition> extractLicensingConditions(Object configuration) {
+		List<LicensingCondition> result = new ArrayList<>();
+
+		// go to arbitr
 		// licenseIdentifier - from client in request
-		// reserveLicenseCondition(String licenseIdentifier);  
-		
-		// 
-		
-		
+		// reserveLicenseCondition(String licenseIdentifier);
+
+		//
+
 		for (LicensingConditionStorage storage : conditionStorages) {
-			result.addAll(storage.getConditionDescriptors());
+			result.addAll(storage.getLicensingCondition());
 		}
 		return result;
 	}

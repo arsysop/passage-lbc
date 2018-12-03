@@ -7,4 +7,6 @@
    <reference bind="bindLogger" cardinality="1..1" interface="org.osgi.service.log.LoggerFactory" name="LoggerFactory" policy="static" unbind="unbindLogger"/>
    <implementation class="ru.arsysop.passage.lbc.base.actions.FeaturePermissionRequestAction"/>
    <reference bind="bindServerConditionEvaluator" cardinality="0..n" interface="ru.arsysop.passage.lic.runtime.ConditionEvaluator" name="ConditionEvaluator" policy="dynamic" unbind="unbindServerConditionEvaluator"/>
+   <reference bind="bindLicensingConditionTransport" cardinality="0..n" interface="ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport" name="LicensingConditionTransport" policy="dynamic" unbind="unbindLicensingConditionTransport"/>
+   <reference bind="bindFeaturePermissionTransport" cardinality="0..n" interface="ru.arsysop.passage.lic.runtime.io.FeaturePermissionTransport" name="FeaturePermissionTransport" policy="dynamic" unbind="unbindFeaturePermissionTransport"/>
 </scr:component>

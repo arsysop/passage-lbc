@@ -22,12 +22,12 @@ package ru.arsysop.passage.lbc.server;
 
 import java.util.List;
 
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.base.BaseLicensingCondition;
 
 public interface LicensingConditionStorage {
 
 	void createConditionDescriptors(String conditionValues);
 
-	List<ConditionDescriptor> getConditionDescriptors();
+	List<BaseLicensingCondition> getLicensingCondition();
 
 }
