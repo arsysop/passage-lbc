@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
-import ru.arsysop.passage.lic.internal.net.FloatingFeaturePermission;
+import ru.arsysop.passage.lic.base.BaseFeaturePermission;
 import ru.arsysop.passage.lic.net.TimeConditions;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
@@ -98,8 +98,8 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 		String featureId = condition.getFeatureIdentifier();
 		String matchVersion = condition.getMatchVersion();
 		String matchRule = condition.getMatchRule();
-		FloatingFeaturePermission permission = new FloatingFeaturePermission(featureId, matchVersion, matchRule,
-				leaseTime, expireTime);
+		BaseFeaturePermission permission = new BaseFeaturePermission(featureId, matchVersion, matchRule, leaseTime,
+				expireTime);
 		return (FeaturePermission) permission;
 
 	}
