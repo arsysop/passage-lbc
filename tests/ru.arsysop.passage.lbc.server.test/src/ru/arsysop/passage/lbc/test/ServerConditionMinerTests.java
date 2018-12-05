@@ -18,34 +18,54 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeNoException;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
 import ru.arsysop.passage.lic.base.LicensingPaths;
-import ru.arsysop.passage.lic.internal.net.NetConditionMiner;
+import ru.arsysop.passage.lic.net.RequestProducer;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
 
 public class ServerConditionMinerTests {
 	private static final String EXTENSION_SERVER_SETTINGS = ".settings";
 	private static final String PASSAGE_SERVER_PORT_DEF = "passage.server.port=8080";
 	private static final String PASSAGE_SERVER_HOST_DEF = "passage.server.host=localhost";
-
+	private static final String HOST_KEY = "passage.server.host";
+	private static final String PORT_KEY = "passage.server.port";
+	private static final String HOST_PORT = "%s:%s";
 	private static final String PRODUCT_ID_TEST = "product.test";
 	private static ServiceReference<EnvironmentInfo> environmentInfoReference;
 	private static EnvironmentInfo environmentInfo;
@@ -54,11 +74,8 @@ public class ServerConditionMinerTests {
 	 * Passed through maven-surefire-plugin configuration
 	 */
 	private static final String MVN_PROJECT_OUTPUT_PROPERTY = "project.build.directory"; //$NON-NLS-1$
-
+	private static final String MINER_LICENSING_CONDITION_TYPE = "extractConditions";
 	private static final String MVN_PROJECT_OUTPUT_VALUE = "target"; //$NON-NLS-1$
-
-	@Rule
-	public TemporaryFolder baseFolder = new TemporaryFolder(new File(resolveOutputDirName()));
 
 	public static String resolveOutputDirName() {
 		String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
@@ -68,7 +85,7 @@ public class ServerConditionMinerTests {
 	}
 
 	@BeforeClass
-	public void preprocesingTest() {
+	public static void preprocesingTest() {
 		Bundle bundle = FrameworkUtil.getBundle(ServerConditionMinerTests.class);
 		BundleContext bundleContext = bundle.getBundleContext();
 		environmentInfoReference = bundleContext.getServiceReference(EnvironmentInfo.class);
@@ -80,7 +97,7 @@ public class ServerConditionMinerTests {
 		}
 	}
 
-	private void createServerConfiguration(String productId) throws IOException {
+	private static void createServerConfiguration(String productId) throws IOException {
 		String install = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
 		Path path = LicensingPaths.resolveConfigurationPath(install, productId);
 		Files.createDirectories(path);
@@ -101,10 +118,89 @@ public class ServerConditionMinerTests {
 	@Test
 	public void mineConditionFromServerPositiveTest() {
 
-		@SuppressWarnings("restriction")
-		NetConditionMiner serverMiner = new NetConditionMiner();
-		Iterable<LicensingCondition> severConditions = serverMiner.extractLicensingConditions(null);
+		assertNotNull(environmentInfo);
+		String areaValue = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
+
+		Path configurationPath = LicensingPaths.resolveConfigurationPath(areaValue, PRODUCT_ID_TEST);
+		assertTrue(Files.isDirectory(configurationPath));
+
+		List<Path> settinsFiles = new ArrayList<>();
+		try {
+			Files.walkFileTree(configurationPath, new SimpleFileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					if (file.toString().toLowerCase().endsWith(EXTENSION_SERVER_SETTINGS)) {
+						settinsFiles.add(file);
+					}
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} catch (IOException e) {
+			assumeNoException(e);
+		}
+		Map<String, String> settingsMap = new HashMap<>();
+		for (Path path : settinsFiles) {
+			try {
+				Map<String, String> loadedSettings = loadIstallationAreaSettings(Files.readAllLines(path));
+				settingsMap.putAll(loadedSettings);
+
+			} catch (Exception e) {
+				assumeNoException(e);
+			}
+		}
+
+		RequestProducer requestProducer = new RequestProducer();
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String hostValue = settingsMap.get(HOST_KEY);
+		assertNotNull(hostValue);
+		assertFalse(hostValue.isEmpty());
+
+		String portValue = settingsMap.get(PORT_KEY);
+		assertNotNull(portValue);
+		assertFalse(portValue.isEmpty());
+
+		Map<String, String> requestAttributes = requestProducer.initRequestParams(hostValue, portValue, "client");
+		HttpHost host = HttpHost.create(String.format(HOST_PORT, hostValue, portValue));
+		URIBuilder requestBulder = requestProducer.createRequestURI(httpClient, host, requestAttributes,
+				MINER_LICENSING_CONDITION_TYPE);
+
+		assertNotNull(requestBulder);
+
+		HttpPost httpPost = null;
+		try {
+			httpPost = new HttpPost(requestBulder.build());
+		} catch (URISyntaxException e) {
+			assumeNoException(e);
+		}
+
+		ResponseHandler<Iterable<LicensingCondition>> responseHandler = new ResponseHandler<Iterable<LicensingCondition>>() {
+
+			@Override
+			public Iterable<LicensingCondition> handleResponse(HttpResponse response)
+					throws ClientProtocolException, IOException {
+				HttpEntity entity = response.getEntity();
+				assertNotNull(entity);
+				assertNotNull(entity.getContent());
+				return null;
+			}
+		};
+		try {
+			httpClient.execute(host, httpPost, responseHandler);
+		} catch (IOException e) {
+			assumeNoException(e);
+		}
 
 	}
 
+	private Map<String, String> loadIstallationAreaSettings(List<String> readAllLines) {
+		Map<String, String> settings = new HashMap<>();
+		for (String iter : readAllLines) {
+			String[] setting = iter.split("=");
+			if (setting.length == 2) {
+				settings.put(setting[0], setting[1]);
+			}
+		}
+		return settings;
+	}
 }

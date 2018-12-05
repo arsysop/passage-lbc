@@ -17,3 +17,4 @@ Require-Bundle: org.junit,
  ru.arsysop.passage.lic.base,
  org.eclipse.osgi
 Automatic-Module-Name: ru.arsysop.passage.lbc.server.test
+Bundle-ActivationPolicy: lazy
