@@ -21,21 +21,19 @@ package ru.arsysop.passage.lbc.base.request;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
-import ru.arsysop.passage.lbc.server.ServerRuntimeRequestParameters;
+import ru.arsysop.passage.lic.net.RequestParameters;
 
-public class AdminRequestExecutor implements ServerRequestExecutor {
+public class AdminRequestExecutor extends BaseComponent implements ServerRequestExecutor {
 
 	private static final String MSG_REQUEST_ACTION_NOT_FOUND_ERROR = "Action id: %s not found";
-
-	private static Logger LOG = Logger.getLogger(AdminRequestExecutor.class.getName());
 
 	private static Map<String, ServerRequestAction> mapActionRequest = new HashMap<>();
 
@@ -45,18 +43,18 @@ public class AdminRequestExecutor implements ServerRequestExecutor {
 	public void executeRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		String actionId = request.getParameter(ServerRuntimeRequestParameters.SERVER_ACTION_ID);
+		String actionId = request.getParameter(RequestParameters.SERVER_ACTION_ID);
 		ServerRequestAction requestAction = mapActionRequest.get(actionId);
 		if (requestAction != null) {
 			requestAction.execute(request, response);
 		} else {
-			LOG.info(String.format(MSG_REQUEST_ACTION_NOT_FOUND_ERROR, requestAction));
+			logger.info(String.format(MSG_REQUEST_ACTION_NOT_FOUND_ERROR, requestAction));
 		}
 	}
 
 	@Override
 	public boolean checkAccesstMode(HttpServletRequest baseRequest) {
-		String requestAccessMode = baseRequest.getParameter(ServerRuntimeRequestParameters.SERVER_ACCESS_MODE_ID);
+		String requestAccessMode = baseRequest.getParameter(RequestParameters.SERVER_ACCESS_MODE_ID);
 		if (requestAccessMode != null && requestAccessMode.equals(accessModeId)) {
 			return true;
 		}

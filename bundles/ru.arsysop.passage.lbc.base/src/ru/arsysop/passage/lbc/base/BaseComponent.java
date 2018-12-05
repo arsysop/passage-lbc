@@ -18,23 +18,20 @@
  * Contributors:
  *     ArSysOp - initial API and implementation
  *******************************************************************************/
-package ru.arsysop.passage.lbc.server;
+package ru.arsysop.passage.lbc.base;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.osgi.service.log.Logger;
+import org.osgi.service.log.LoggerFactory;
 
-public class ServerTransferObject {
+public abstract class BaseComponent {
 
-	List<ServerConditionDescriptor> serverDescriptors = new ArrayList<>();
+	protected Logger logger;
 
-	public ServerTransferObject() {
+	protected void bindLogger(LoggerFactory loggerFactory) {
+		logger = loggerFactory.getLogger(this.getClass().getName());
 	}
 
-	public List<ServerConditionDescriptor> getDescriptors() {
-		return serverDescriptors;
-	}
-
-	public void addDescriptors(ServerConditionDescriptor d) {
-		serverDescriptors.add(d);
+	protected void unbindLogger(LoggerFactory loggerFactory) {
+		logger = null;
 	}
 }

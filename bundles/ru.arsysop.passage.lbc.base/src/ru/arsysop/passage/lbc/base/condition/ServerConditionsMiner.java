@@ -24,38 +24,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.osgi.service.log.Logger;
-import org.osgi.service.log.LoggerFactory;
-
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
-import ru.arsysop.passage.lic.runtime.ConditionMiner;
-
+import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lbc.server.ServerRuntimeRequestParameters;
 
+import ru.arsysop.passage.lic.runtime.ConditionMiner;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
 
-public class ServerConditionsMiner implements ConditionMiner {
+public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
 
+	private static final Object LICENSING_DATA = "licensingData";
 	List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
-	private Logger logger;
 
 	public boolean checkProductById(String productId) {
-
 		return false;
 	}
 
-	public void bindLogger(LoggerFactory loggerFactory) {
-		this.logger = loggerFactory.getLogger(this.getClass().getName());
-	}
-
-	public void unbindLogger(LoggerFactory loggerFactory) {
-		this.logger = null;
-	}
-
-	public void bindLicensingComponent(LicensingConditionStorage conditionStorage, Map<String, String> context) {
+	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage, Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(ServerRuntimeRequestParameters.LICENSING_DATA);
+		String conditions = context.get(LICENSING_DATA);
 
 		if (conditions != null && !conditions.isEmpty()) {
 			String conditionDatas[] = conditions.split(",");
@@ -68,10 +55,11 @@ public class ServerConditionsMiner implements ConditionMiner {
 		}
 	}
 
-	public void unbindLicensingComponent(LicensingConditionStorage conditionStorage, Map<String, String> context) {
+	public void unbindLicensingConditionStorage(LicensingConditionStorage conditionStorage,
+			Map<String, String> context) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(ServerRuntimeRequestParameters.LICENSING_DATA);
+		String conditions = context.get(LICENSING_DATA);
 
 		if (conditions != null && !conditions.isEmpty()) {
 			String conditionDatas[] = conditions.split(",");
@@ -85,17 +73,13 @@ public class ServerConditionsMiner implements ConditionMiner {
 	}
 
 	@Override
-	public Iterable<ConditionDescriptor> extractConditionDescriptors(Object configuration) {
-		List<ConditionDescriptor> result = new ArrayList<>();
+	public Iterable<LicensingCondition> extractLicensingConditions(Object configuration) {
+		List<LicensingCondition> result = new ArrayList<>();
+
 		for (LicensingConditionStorage storage : conditionStorages) {
-			result.addAll(storage.getConditionDescriptors());
+			result.addAll(storage.getLicensingCondition());
 		}
 		return result;
-	}
-
-	public boolean evaluate(String clientId, String productId, String featureId) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

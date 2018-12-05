@@ -22,32 +22,29 @@ package ru.arsysop.passage.lbc.base.condition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
-
+import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lbc.server.ServerConditionDescriptor;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.base.BaseLicensingCondition;
+import ru.arsysop.passage.lic.base.LicensingConditions;
 
-public class ServerConditionsStorage implements LicensingConditionStorage {
+public class ServerConditionsStorage extends BaseComponent implements LicensingConditionStorage {
 
-	List<ConditionDescriptor> listConditionDescriptors = new ArrayList<>();
+	List<BaseLicensingCondition> listConditionDescriptors = new ArrayList<>();
 
 	private final static String SPLITTER = ";";
-
-	Logger LOG = Logger.getLogger(ServerConditionsStorage.class.getName());
 
 	@Override
 	public void createConditionDescriptors(String conditionValues) {
 		String[] values = conditionValues.split(SPLITTER);
 		if (values.length == 4) {
-			ConditionDescriptor descriptor = new ServerConditionDescriptor(values[1], "", "", "", "");
+			BaseLicensingCondition descriptor = LicensingConditions.create(values[1], "", "", "", "");
 			listConditionDescriptors.add(descriptor);
 		}
 	}
 
 	@Override
-	public List<ConditionDescriptor> getConditionDescriptors() {
+	public List<BaseLicensingCondition> getLicensingCondition() {
 		return listConditionDescriptors;
 	}
 

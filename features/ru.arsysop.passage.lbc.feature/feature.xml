@@ -20,7 +20,7 @@
 <feature
       id="ru.arsysop.passage.lbc.feature"
       label="%Feature-Name"
-      version="0.2.0.qualifier"
+      version="0.3.1.qualifier"
       provider-name="%Provider-Name">
 
    <description>

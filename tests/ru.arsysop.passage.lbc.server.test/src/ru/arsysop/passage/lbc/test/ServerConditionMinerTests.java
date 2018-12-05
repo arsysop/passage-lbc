@@ -18,49 +18,189 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeNoException;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.junit.Assert;
-import org.junit.Before;
+import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
-import ru.arsysop.passage.lbc.server.RequestClientEngine;
-import ru.arsysop.passage.lbc.server.ServerConditionDescriptor;
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
+import ru.arsysop.passage.lic.base.LicensingPaths;
+import ru.arsysop.passage.lic.net.RequestProducer;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
 
 public class ServerConditionMinerTests {
-	private final String HOST_NUM = "localhost";
-	private final String PORT_NUM = "8080";
-	private final String MODE_ID = "client";
+	private static final String EXTENSION_SERVER_SETTINGS = ".settings";
+	private static final String PASSAGE_SERVER_PORT_DEF = "passage.server.port=8080";
+	private static final String PASSAGE_SERVER_HOST_DEF = "passage.server.host=localhost";
+	private static final String HOST_KEY = "passage.server.host";
+	private static final String PORT_KEY = "passage.server.port";
+	private static final String HOST_PORT = "%s:%s";
+	private static final String PRODUCT_ID_TEST = "product.test";
+	private static ServiceReference<EnvironmentInfo> environmentInfoReference;
+	private static EnvironmentInfo environmentInfo;
 
-	private CloseableHttpClient httpClient;
-	private RequestClientEngine requestEngine;
+	/**
+	 * Passed through maven-surefire-plugin configuration
+	 */
+	private static final String MVN_PROJECT_OUTPUT_PROPERTY = "project.build.directory"; //$NON-NLS-1$
+	private static final String MINER_LICENSING_CONDITION_TYPE = "extractConditions";
+	private static final String MVN_PROJECT_OUTPUT_VALUE = "target"; //$NON-NLS-1$
 
-	@Before
-	public void preprocesingTest() {
-		httpClient = HttpClients.createDefault();
-		requestEngine = new RequestClientEngine();
+	public static String resolveOutputDirName() {
+		String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
+		String defaultValue = userDir + File.separator + MVN_PROJECT_OUTPUT_VALUE;
+		String outDir = System.getProperty(MVN_PROJECT_OUTPUT_PROPERTY, defaultValue);
+		return outDir;
+	}
+
+	@BeforeClass
+	public static void preprocesingTest() {
+		Bundle bundle = FrameworkUtil.getBundle(ServerConditionMinerTests.class);
+		BundleContext bundleContext = bundle.getBundleContext();
+		environmentInfoReference = bundleContext.getServiceReference(EnvironmentInfo.class);
+		environmentInfo = bundleContext.getService(environmentInfoReference);
+		try {
+			createServerConfiguration(PRODUCT_ID_TEST);
+		} catch (IOException e) {
+			assumeNoException(e.getMessage(), e);
+		}
+	}
+
+	private static void createServerConfiguration(String productId) throws IOException {
+		String install = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
+		Path path = LicensingPaths.resolveConfigurationPath(install, productId);
+		Files.createDirectories(path);
+		File serverConfigurationFile = path.resolve(productId + EXTENSION_SERVER_SETTINGS).toFile();
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(serverConfigurationFile));) {
+			bw.write(PASSAGE_SERVER_HOST_DEF);
+			bw.newLine();
+			bw.write(PASSAGE_SERVER_PORT_DEF);
+			bw.newLine();
+			bw.flush();
+		} catch (Exception e) {
+			assumeNoException(e.getMessage(), e);
+		}
+
 	}
 
 	@Test
-	public void minerServerConditionPositiveTest() {
+	public void mineConditionFromServerPositiveTest() {
 
-		Map<String, String> requestAttributes = requestEngine.initRequestParams(HOST_NUM, PORT_NUM, MODE_ID);
-		Assert.assertNotNull(requestAttributes);
+		assertNotNull(environmentInfo);
+		String areaValue = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
 
-		HttpHost host = HttpHost.create(HOST_NUM + ":" + PORT_NUM);
-		Iterable<ServerConditionDescriptor> descriptors = requestEngine.requestServerConditions(httpClient, host,
-				requestAttributes);
-		List<ConditionDescriptor> conditions = StreamSupport.stream(descriptors.spliterator(), false)
-				.collect(Collectors.toList());
-		Assert.assertTrue(!conditions.isEmpty());
+		Path configurationPath = LicensingPaths.resolveConfigurationPath(areaValue, PRODUCT_ID_TEST);
+		assertTrue(Files.isDirectory(configurationPath));
+
+		List<Path> settinsFiles = new ArrayList<>();
+		try {
+			Files.walkFileTree(configurationPath, new SimpleFileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					if (file.toString().toLowerCase().endsWith(EXTENSION_SERVER_SETTINGS)) {
+						settinsFiles.add(file);
+					}
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} catch (IOException e) {
+			assumeNoException(e);
+		}
+		Map<String, String> settingsMap = new HashMap<>();
+		for (Path path : settinsFiles) {
+			try {
+				Map<String, String> loadedSettings = loadIstallationAreaSettings(Files.readAllLines(path));
+				settingsMap.putAll(loadedSettings);
+
+			} catch (Exception e) {
+				assumeNoException(e);
+			}
+		}
+
+		RequestProducer requestProducer = new RequestProducer();
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String hostValue = settingsMap.get(HOST_KEY);
+		assertNotNull(hostValue);
+		assertFalse(hostValue.isEmpty());
+
+		String portValue = settingsMap.get(PORT_KEY);
+		assertNotNull(portValue);
+		assertFalse(portValue.isEmpty());
+
+		Map<String, String> requestAttributes = requestProducer.initRequestParams(hostValue, portValue, "client");
+		HttpHost host = HttpHost.create(String.format(HOST_PORT, hostValue, portValue));
+		URIBuilder requestBulder = requestProducer.createRequestURI(httpClient, host, requestAttributes,
+				MINER_LICENSING_CONDITION_TYPE);
+
+		assertNotNull(requestBulder);
+
+		HttpPost httpPost = null;
+		try {
+			httpPost = new HttpPost(requestBulder.build());
+		} catch (URISyntaxException e) {
+			assumeNoException(e);
+		}
+
+		ResponseHandler<Iterable<LicensingCondition>> responseHandler = new ResponseHandler<Iterable<LicensingCondition>>() {
+
+			@Override
+			public Iterable<LicensingCondition> handleResponse(HttpResponse response)
+					throws ClientProtocolException, IOException {
+				HttpEntity entity = response.getEntity();
+				assertNotNull(entity);
+				assertNotNull(entity.getContent());
+				return null;
+			}
+		};
+		try {
+			httpClient.execute(host, httpPost, responseHandler);
+		} catch (IOException e) {
+			assumeNoException(e);
+		}
 
 	}
 
+	private Map<String, String> loadIstallationAreaSettings(List<String> readAllLines) {
+		Map<String, String> settings = new HashMap<>();
+		for (String iter : readAllLines) {
+			String[] setting = iter.split("=");
+			if (setting.length == 2) {
+				settings.put(setting[0], setting[1]);
+			}
+		}
+		return settings;
+	}
 }
