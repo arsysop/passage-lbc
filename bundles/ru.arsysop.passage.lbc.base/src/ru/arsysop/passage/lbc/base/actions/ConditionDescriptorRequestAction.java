@@ -111,4 +111,11 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 			mapCondition2Transport.put(conditionType, transport);
 		}
 	}
+
+	public void unbindLicensingConditionTransport(LicensingConditionTransport transport, Map<String, String> context) {
+		String conditionType = context.get(LICENSING_CONTENT_TYPE);
+		if (conditionType != null) {
+			mapCondition2Transport.remove(conditionType, transport);
+		}
+	}
 }

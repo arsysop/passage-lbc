@@ -76,12 +76,6 @@ public class ServerConditionsMiner extends BaseComponent implements ConditionMin
 	public Iterable<LicensingCondition> extractLicensingConditions(Object configuration) {
 		List<LicensingCondition> result = new ArrayList<>();
 
-		// go to arbitr
-		// licenseIdentifier - from client in request
-		// reserveLicenseCondition(String licenseIdentifier);
-
-		//
-
 		for (LicensingConditionStorage storage : conditionStorages) {
 			result.addAll(storage.getLicensingCondition());
 		}
