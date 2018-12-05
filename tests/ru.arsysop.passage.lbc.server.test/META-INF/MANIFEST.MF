@@ -13,5 +13,7 @@ Require-Bundle: org.junit,
  ru.arsysop.passage.lbc.container,
  ru.arsysop.passage.lic.runtime,
  ru.arsysop.passage.lbc.server,
- ru.arsysop.passage.lic.net
+ ru.arsysop.passage.lic.net,
+ ru.arsysop.passage.lic.base,
+ org.eclipse.osgi
 Automatic-Module-Name: ru.arsysop.passage.lbc.server.test

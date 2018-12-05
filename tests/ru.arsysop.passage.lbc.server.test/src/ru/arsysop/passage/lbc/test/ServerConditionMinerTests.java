@@ -18,48 +18,93 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.test;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import static org.junit.Assume.assumeNoException;
 
-import org.apache.http.HttpHost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.junit.Assert;
-import org.junit.Before;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
-import ru.arsysop.passage.lic.runtime.ConditionDescriptor;
-import ru.arsysop.passage.lic.transport.RequestProducer;
-import ru.arsysop.passage.lic.transport.FloatingConditionDescriptor;
+import ru.arsysop.passage.lic.base.LicensingPaths;
+import ru.arsysop.passage.lic.internal.net.NetConditionMiner;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
 
 public class ServerConditionMinerTests {
-	private final String HOST_NUM = "localhost";
-	private final String PORT_NUM = "8080";
-	private final String MODE_ID = "client";
+	private static final String EXTENSION_SERVER_SETTINGS = ".settings";
+	private static final String PASSAGE_SERVER_PORT_DEF = "passage.server.port=8080";
+	private static final String PASSAGE_SERVER_HOST_DEF = "passage.server.host=localhost";
 
-	private CloseableHttpClient httpClient;
-	private RequestProducer requestEngine;
+	private static final String PRODUCT_ID_TEST = "product.test";
+	private static ServiceReference<EnvironmentInfo> environmentInfoReference;
+	private static EnvironmentInfo environmentInfo;
 
-	@Before
+	/**
+	 * Passed through maven-surefire-plugin configuration
+	 */
+	private static final String MVN_PROJECT_OUTPUT_PROPERTY = "project.build.directory"; //$NON-NLS-1$
+
+	private static final String MVN_PROJECT_OUTPUT_VALUE = "target"; //$NON-NLS-1$
+
+	@Rule
+	public TemporaryFolder baseFolder = new TemporaryFolder(new File(resolveOutputDirName()));
+
+	public static String resolveOutputDirName() {
+		String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
+		String defaultValue = userDir + File.separator + MVN_PROJECT_OUTPUT_VALUE;
+		String outDir = System.getProperty(MVN_PROJECT_OUTPUT_PROPERTY, defaultValue);
+		return outDir;
+	}
+
+	@BeforeClass
 	public void preprocesingTest() {
-		httpClient = HttpClients.createDefault();
-		requestEngine = new RequestProducer();
+		Bundle bundle = FrameworkUtil.getBundle(ServerConditionMinerTests.class);
+		BundleContext bundleContext = bundle.getBundleContext();
+		environmentInfoReference = bundleContext.getServiceReference(EnvironmentInfo.class);
+		environmentInfo = bundleContext.getService(environmentInfoReference);
+		try {
+			createServerConfiguration(PRODUCT_ID_TEST);
+		} catch (IOException e) {
+			assumeNoException(e.getMessage(), e);
+		}
+	}
+
+	private void createServerConfiguration(String productId) throws IOException {
+		String install = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
+		Path path = LicensingPaths.resolveConfigurationPath(install, productId);
+		Files.createDirectories(path);
+		File serverConfigurationFile = path.resolve(productId + EXTENSION_SERVER_SETTINGS).toFile();
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(serverConfigurationFile));) {
+			bw.write(PASSAGE_SERVER_HOST_DEF);
+			bw.newLine();
+			bw.write(PASSAGE_SERVER_PORT_DEF);
+			bw.newLine();
+			bw.flush();
+		} catch (Exception e) {
+			assumeNoException(e.getMessage(), e);
+		}
+
 	}
 
 	@Test
-	public void minerServerConditionPositiveTest() {
+	public void mineConditionFromServerPositiveTest() {
 
-		Map<String, String> requestAttributes = requestEngine.initRequestParams(HOST_NUM, PORT_NUM, MODE_ID);
-		Assert.assertNotNull(requestAttributes);
+		@SuppressWarnings("restriction")
+		NetConditionMiner serverMiner = new NetConditionMiner();
+		Iterable<LicensingCondition> severConditions = serverMiner.extractLicensingConditions(null);
 
-		HttpHost host = HttpHost.create(HOST_NUM + ":" + PORT_NUM);
-		Iterable<FloatingConditionDescriptor> descriptors = requestEngine.extractConditionsRequest(httpClient, host,
-				requestAttributes);
-		List<ConditionDescriptor> conditions = StreamSupport.stream(descriptors.spliterator(), false)
-				.collect(Collectors.toList());
-		Assert.assertTrue(!conditions.isEmpty());
 	}
 
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
 import ru.arsysop.passage.lic.base.BaseLicensingCondition;
+import ru.arsysop.passage.lic.base.LicensingConditions;
 
 public class ServerConditionsStorage extends BaseComponent implements LicensingConditionStorage {
 
@@ -37,7 +38,7 @@ public class ServerConditionsStorage extends BaseComponent implements LicensingC
 	public void createConditionDescriptors(String conditionValues) {
 		String[] values = conditionValues.split(SPLITTER);
 		if (values.length == 4) {
-			BaseLicensingCondition descriptor = new BaseLicensingCondition(values[1], "", "", "", "");
+			BaseLicensingCondition descriptor = LicensingConditions.create(values[1], "", "", "", "");
 			listConditionDescriptors.add(descriptor);
 		}
 	}

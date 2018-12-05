@@ -44,9 +44,11 @@ import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
  */
 public class ConditionDescriptorRequestAction extends BaseComponent implements ServerRequestAction {
 
-	private static final String ERROR_CONDITIONS_NOT_AVAILABLE = "No condition miners available";
-	private static final String MSG_LOG = "Executing action request from class: %s";
-	private static final String PARAMETER_CONFIGURATION = "configuration";
+	private static final String TRANSPORT_NOT_DEFINED_ERROR = "LicensingConditionTransport not defined for contentType: %s";
+	private static final String SERVER_MINER_TYPE = "server.miner"; // NLS-$1
+	private static final String ERROR_CONDITIONS_NOT_AVAILABLE = "No condition miners available"; // NLS-$1
+	private static final String MSG_LOG = "Executing action request from class: %s"; // NLS-$1
+	private static final String PARAMETER_CONFIGURATION = "configuration"; // NLS-$1
 
 	private static final String APPLICATION_JSON = "application/json"; // NLS-$1
 	private static final String LICENSING_CONTENT_TYPE = "licensing.content.type"; // NLS-$1
@@ -77,7 +79,7 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 			String contentType = request.getParameter(RequestParameters.CONTENT_TYPE);
 			LicensingConditionTransport transport = mapCondition2Transport.get(contentType);
 			if (transport == null) {
-				logger.error(String.format("LicensingConditionTransport not defined for contentType: %s", contentType));
+				logger.error(String.format(TRANSPORT_NOT_DEFINED_ERROR, contentType));
 				return false;
 			}
 
@@ -94,7 +96,7 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 	public void bindConditionMiner(ConditionMiner conditionMiner, Map<String, String> context) {
 
 		String minerType = context.get(MINER_TYPE_KEY);
-		if (minerType != null && minerType.equals("server.miner")) {
+		if (minerType != null && minerType.equals(SERVER_MINER_TYPE)) {
 			this.licenseConditionMiners.add(conditionMiner);
 		}
 	}

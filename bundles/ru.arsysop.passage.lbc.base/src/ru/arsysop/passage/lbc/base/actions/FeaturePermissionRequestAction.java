@@ -106,7 +106,7 @@ public class FeaturePermissionRequestAction extends BaseComponent implements Ser
 
 	public void unbindServerConditionEvaluator(ConditionEvaluator evaluator, Map<String, String> context) {
 		String conditionType = context.get(LICENSING_CONTENT_TYPE);
-		if (conditionType.equals(LICENSING_CONDITION_TYPE_SERVER)) {
+		if (conditionType != null && conditionType.equals(LICENSING_CONDITION_TYPE_SERVER)) {
 			if (evaluator instanceof ServerConditionsDistributor) {
 				conditionEvaluator = null;
 			}
