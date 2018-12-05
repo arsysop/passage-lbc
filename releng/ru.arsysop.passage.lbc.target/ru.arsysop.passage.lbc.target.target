@@ -30,7 +30,7 @@
 			<unit id="ru.arsysop.passage.brc.oshi.feature.feature.group" version="0.0.0"/>
 			<repository location="http://dl.bintray.com/arsysop/passage-brc/0.3.1/"/>
 		</location>
-		http://dl.bintray.com/arsysop/passage-lic/0.3.1
+		
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="ru.arsysop.passage.lic.bc.feature.feature.group" version="0.0.0"/>
 			<unit id="ru.arsysop.passage.lic.equinox.feature.feature.group" version="0.0.0"/>
@@ -43,9 +43,7 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
-		<repository location="http://download.eclipse.org/releases/2018-09/"/>
-        </location>
-
-и должно хватить
+			<repository location="http://download.eclipse.org/releases/2018-09/"/>
+		</location>
 	</locations>
 </target>
