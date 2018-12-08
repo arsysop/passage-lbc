@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Passage Licensing Backend Component Server" uid="ru.arsysop.passage.lbc.application.product" id="ru.arsysop.passage.lbc.application.product" application="ru.arsysop.passage.lbc.application" version="0.3.1.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="Passage Licensing Backend Component Server" uid="ru.arsysop.passage.lbc.application.product" id="ru.arsysop.passage.lbc.application.product" application="ru.arsysop.passage.lbc.application" version="0.3.2.qualifier" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>

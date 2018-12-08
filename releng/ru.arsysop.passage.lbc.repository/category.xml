@@ -18,7 +18,7 @@
 		ArSysOp - initial API and implementation
 -->
 <site>
-   <feature url="features/ru.arsysop.passage.lbc.feature_0.3.1.qualifier.jar" id="ru.arsysop.passage.lbc.feature" version="0.3.1.qualifier"/>
+   <feature url="features/ru.arsysop.passage.lbc.feature_0.3.2.qualifier.jar" id="ru.arsysop.passage.lbc.feature" version="0.3.2.qualifier"/>
    <category-def name="ru.arsysop.passage.lbc.category" label="Passage Licensing Server">
       <description>
          Passage Licensing Server
