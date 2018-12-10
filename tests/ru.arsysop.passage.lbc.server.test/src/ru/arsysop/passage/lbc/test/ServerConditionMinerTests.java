@@ -160,7 +160,8 @@ public class ServerConditionMinerTests {
 		assertNotNull(portValue);
 		assertFalse(portValue.isEmpty());
 
-		Map<String, String> requestAttributes = requestProducer.initRequestParams(hostValue, portValue, "client");
+		Map<String, String> requestAttributes = requestProducer.initRequestParams(hostValue, portValue, "client",
+				"product1.id", "1.0.0");
 		HttpHost host = HttpHost.create(String.format(HOST_PORT, hostValue, portValue));
 		URIBuilder requestBulder = requestProducer.createRequestURI(httpClient, host, requestAttributes,
 				MINER_LICENSING_CONDITION_TYPE);

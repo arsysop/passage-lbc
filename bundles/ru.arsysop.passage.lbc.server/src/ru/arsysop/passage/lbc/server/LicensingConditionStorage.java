@@ -26,8 +26,6 @@ import ru.arsysop.passage.lic.base.BaseLicensingCondition;
 
 public interface LicensingConditionStorage {
 
-	void createConditionDescriptors(String conditionValues);
-
-	List<BaseLicensingCondition> getLicensingCondition();
+	List<BaseLicensingCondition> getLicensingCondition(String productId , String productVersion);
 
 }

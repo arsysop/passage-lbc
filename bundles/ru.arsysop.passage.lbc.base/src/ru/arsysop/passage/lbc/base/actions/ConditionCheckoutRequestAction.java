@@ -41,7 +41,7 @@ import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
  * {@code Iterable<FeaturePermission> evaluateConditions()}
  * {@link ru.arsysop.passage.lic.runtime.AccessManager}
  */
-public class FeaturePermissionRequestAction extends BaseComponent implements ServerRequestAction {
+public class ConditionCheckoutRequestAction extends BaseComponent implements ServerRequestAction {
 
 	private static final String CHARSET_UTF_8 = "UTF-8"; // NLS-$1
 	private static final String APPLICATION_JSON = "application/json"; // NLS-$1

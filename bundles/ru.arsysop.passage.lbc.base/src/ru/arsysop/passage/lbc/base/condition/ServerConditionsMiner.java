@@ -20,66 +20,70 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.condition;
 
+import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_IDETIFIER;
+import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_VERSION;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;;
 
 public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
-
-	private static final Object LICENSING_DATA = "licensingData";
+	private static final String PRODUCT_VERSION_NOT_DEF = "Product version not defined";
+	private static final String PRODUCT_IDETIFIER_NOT_DEF = "Product identifier not defined";
 	List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
 
 	public boolean checkProductById(String productId) {
 		return false;
 	}
 
-	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage, Map<String, String> context) {
+	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage) {
 		logger.debug(conditionStorage.getClass().getName());
-
-		String conditions = context.get(LICENSING_DATA);
-
-		if (conditions != null && !conditions.isEmpty()) {
-			String conditionDatas[] = conditions.split(",");
-			for (String condition : conditionDatas) {
-				conditionStorage.createConditionDescriptors(condition);
-				if (!conditionStorages.contains(conditionStorage)) {
-					conditionStorages.add(conditionStorage);
-				}
+		if (conditionStorage != null) {
+			if (!conditionStorages.contains(conditionStorage)) {
+				conditionStorages.add(conditionStorage);
 			}
+
 		}
 	}
 
-	public void unbindLicensingConditionStorage(LicensingConditionStorage conditionStorage,
-			Map<String, String> context) {
+	public void unbindLicensingConditionStorage(LicensingConditionStorage conditionStorage) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(LICENSING_DATA);
-
-		if (conditions != null && !conditions.isEmpty()) {
-			String conditionDatas[] = conditions.split(",");
-			for (String condition : conditionDatas) {
-				conditionStorage.createConditionDescriptors(condition);
-				if (conditionStorages.contains(conditionStorage)) {
-					conditionStorages.remove(conditionStorage);
-				}
+		if (conditionStorage != null) {
+			if (conditionStorages.contains(conditionStorage)) {
+				conditionStorages.remove(conditionStorage);
 			}
 		}
 	}
 
 	@Override
 	public Iterable<LicensingCondition> extractLicensingConditions(Object configuration) {
+
 		List<LicensingCondition> result = new ArrayList<>();
 
-		for (LicensingConditionStorage storage : conditionStorages) {
-			result.addAll(storage.getLicensingCondition());
+		if (configuration instanceof HashMap<?, ?>) {
+			Map<String, String> configurationMap = (HashMap<String, String>) configuration;
+			String productId = configurationMap.get(PRODUCT_IDETIFIER);
+			String productVersion = configurationMap.get(PRODUCT_VERSION);
+
+			if (productId == null || productId.isEmpty()) {
+				logger.error(PRODUCT_IDETIFIER_NOT_DEF);
+				return result;
+			}
+			if (productVersion == null || productVersion.isEmpty()) {
+				logger.error(PRODUCT_VERSION_NOT_DEF);
+				return result;
+			}
+			for (LicensingConditionStorage storage : conditionStorages) {
+				result.addAll(storage.getLicensingCondition(productId, productVersion));
+			}
 		}
 		return result;
 	}
-
 }
