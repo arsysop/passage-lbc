@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
-import ru.arsysop.passage.lic.base.BaseFeaturePermission;
 import ru.arsysop.passage.lic.base.FeaturePermissions;
 import ru.arsysop.passage.lic.net.TimeConditions;
 import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
@@ -96,12 +95,8 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 	private FeaturePermission createFeaturePermission(LicensingCondition condition) {
 		long leaseTime = System.currentTimeMillis();
 		long expireTime = leaseTime + 60 * 60 * 1000;
-		String featureId = condition.getFeatureIdentifier();
-		String matchVersion = condition.getMatchVersion();
-		String matchRule = condition.getMatchRule();
-		BaseFeaturePermission permission = FeaturePermissions.create(featureId, matchVersion, matchRule, leaseTime,
-				expireTime);
-		return (FeaturePermission) permission;
+		FeaturePermission permission = FeaturePermissions.create(condition, leaseTime, expireTime);
+		return permission;
 
 	}
 
