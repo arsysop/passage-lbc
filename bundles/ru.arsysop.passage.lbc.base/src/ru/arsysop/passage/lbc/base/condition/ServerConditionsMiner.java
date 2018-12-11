@@ -20,7 +20,7 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.condition;
 
-import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_IDETIFIER;
+import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_IDENTIFIER;
 import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_VERSION;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class ServerConditionsMiner extends BaseComponent implements ConditionMin
 
 		if (configuration instanceof HashMap<?, ?>) {
 			Map<String, String> configurationMap = (HashMap<String, String>) configuration;
-			String productId = configurationMap.get(PRODUCT_IDETIFIER);
+			String productId = configurationMap.get(PRODUCT_IDENTIFIER);
 			String productVersion = configurationMap.get(PRODUCT_VERSION);
 
 			if (productId == null || productId.isEmpty()) {

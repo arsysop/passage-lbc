@@ -37,7 +37,7 @@ import ru.arsysop.passage.lic.net.RequestParameters;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
 import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
-import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_IDETIFIER;
+import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_IDENTIFIER;
 import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT_VERSION;
 
 import static ru.arsysop.passage.lic.net.RequestParameters.CONFIGURATION_PRODUCT_ID;
@@ -75,7 +75,7 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 			String productId = request.getParameter(CONFIGURATION_PRODUCT_ID);
 			String productVersion = request.getParameter(CONFIGURATION_PRODUCT_VERSION);
 			Map<String, String> configurationMap = new HashMap<>();
-			configurationMap.put((String) PRODUCT_IDETIFIER, productId);
+			configurationMap.put((String) PRODUCT_IDENTIFIER, productId);
 			configurationMap.put((String) PRODUCT_VERSION, productVersion);
 
 			Collection<LicensingCondition> resultConditions = new ArrayList<>();
