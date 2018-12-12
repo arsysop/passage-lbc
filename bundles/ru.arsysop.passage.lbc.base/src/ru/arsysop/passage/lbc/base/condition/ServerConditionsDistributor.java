@@ -20,6 +20,7 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.condition;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,7 +96,9 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 	private FeaturePermission createFeaturePermission(LicensingCondition condition) {
 		long leaseTime = System.currentTimeMillis();
 		long expireTime = leaseTime + 60 * 60 * 1000;
-		FeaturePermission permission = FeaturePermissions.create(condition, leaseTime, expireTime);
+		Date lease = new Date(leaseTime);
+		Date expire = new Date(expireTime);
+		FeaturePermission permission = FeaturePermissions.create(condition, lease, expire);
 		return permission;
 
 	}
