@@ -25,9 +25,9 @@ import java.util.List;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lic.base.LicensingConfigurations;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;;
+import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingConfiguration;;
 
 public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
 	
@@ -58,11 +58,15 @@ public class ServerConditionsMiner extends BaseComponent implements ConditionMin
 	}
 
 	@Override
-	public Iterable<LicensingCondition> extractLicensingConditions(Object configuration) {
+	public Iterable<LicensingCondition> extractLicensingConditions(LicensingConfiguration configuration) {
 
 		List<LicensingCondition> result = new ArrayList<>();
-		String productIdentifier = LicensingConfigurations.resolveProductIdentifier(configuration);
-		String productVersion = LicensingConfigurations.resolveProductVersion(configuration);
+		if (configuration == null) {
+			logger.error("Licensing configuration not defined");
+			return result;
+		}
+		String productIdentifier = configuration.getProductIdentifier();
+		String productVersion = configuration.getProductVersion();
 		if (productIdentifier == null || productIdentifier.isEmpty()) {
 			logger.error("Product identifier not defined");
 			return result;

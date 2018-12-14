@@ -51,7 +51,7 @@ public class ClientRequestExecutor extends BaseComponent implements ServerReques
 	public void executeRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		String actionId = request.getParameter(RequestParameters.SERVER_ACTION_ID);
+		String actionId = request.getParameter(RequestParameters.ACTION);
 		logger.info(String.format(RECIEVED_ACTION_TXT, actionId));
 		if (clientRecognition(request)) {
 			ServerRequestAction requestAction = mapActionRequest.get(actionId);
@@ -70,7 +70,7 @@ public class ClientRequestExecutor extends BaseComponent implements ServerReques
 	}
 
 	public boolean clientRecognition(HttpServletRequest request) {
-		String httpClientTrustId = request.getParameter(RequestParameters.CLIENT_TRUSTED_ID);
+		String httpClientTrustId = request.getParameter(RequestParameters.USER);
 		if (CLIENT_TRUSTED_VALUE.equals(httpClientTrustId)) {
 			return true;
 		}
@@ -79,7 +79,7 @@ public class ClientRequestExecutor extends BaseComponent implements ServerReques
 
 	@Override
 	public boolean checkAccesstMode(HttpServletRequest baseRequest) {
-		String requestAccessMode = baseRequest.getParameter(RequestParameters.SERVER_ACCESS_MODE_ID);
+		String requestAccessMode = baseRequest.getParameter(RequestParameters.MODE);
 		if (requestAccessMode != null && requestAccessMode.equals(accessModeId)) {
 			return true;
 		}

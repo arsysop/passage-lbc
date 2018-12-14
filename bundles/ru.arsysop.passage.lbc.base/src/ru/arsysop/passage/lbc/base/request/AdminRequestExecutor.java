@@ -43,7 +43,7 @@ public class AdminRequestExecutor extends BaseComponent implements ServerRequest
 	public void executeRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		String actionId = request.getParameter(RequestParameters.SERVER_ACTION_ID);
+		String actionId = request.getParameter(RequestParameters.ACTION);
 		ServerRequestAction requestAction = mapActionRequest.get(actionId);
 		if (requestAction != null) {
 			requestAction.execute(request, response);
@@ -54,7 +54,7 @@ public class AdminRequestExecutor extends BaseComponent implements ServerRequest
 
 	@Override
 	public boolean checkAccesstMode(HttpServletRequest baseRequest) {
-		String requestAccessMode = baseRequest.getParameter(RequestParameters.SERVER_ACCESS_MODE_ID);
+		String requestAccessMode = baseRequest.getParameter(RequestParameters.MODE);
 		if (requestAccessMode != null && requestAccessMode.equals(accessModeId)) {
 			return true;
 		}

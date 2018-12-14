@@ -37,10 +37,11 @@ import ru.arsysop.passage.lic.base.LicensingConfigurations;
 import ru.arsysop.passage.lic.net.RequestParameters;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
 
-import static ru.arsysop.passage.lic.net.RequestParameters.CONFIGURATION_PRODUCT_ID;
-import static ru.arsysop.passage.lic.net.RequestParameters.CONFIGURATION_PRODUCT_VERSION;
+import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT;
+import static ru.arsysop.passage.lic.net.RequestParameters.VERSION;
 
 /**
  * According to AccessManager specification implementation of
@@ -68,14 +69,14 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 			return false;
 		}
 		try {
-			String productId = request.getParameter(CONFIGURATION_PRODUCT_ID);
-			String productVersion = request.getParameter(CONFIGURATION_PRODUCT_VERSION);
-			Map<String, String> configurationMap = LicensingConfigurations.createProductConfiguration(productId, productVersion);
+			String productId = request.getParameter(PRODUCT);
+			String productVersion = request.getParameter(VERSION);
+			LicensingConfiguration configuration = LicensingConfigurations.create(productId, productVersion);
 
 			Collection<LicensingCondition> resultConditions = new ArrayList<>();
 
 			for (ConditionMiner miner : licenseConditionMiners) {
-				Iterable<LicensingCondition> descriptors = miner.extractLicensingConditions(configurationMap);
+				Iterable<LicensingCondition> descriptors = miner.extractLicensingConditions(configuration);
 
 				resultConditions.addAll((Collection<? extends LicensingCondition>) descriptors);
 			}

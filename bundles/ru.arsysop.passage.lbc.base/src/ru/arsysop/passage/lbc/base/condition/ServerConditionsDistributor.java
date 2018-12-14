@@ -31,6 +31,7 @@ import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.FeaturePermission;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 
 public class ServerConditionsDistributor extends BaseComponent implements ConditionEvaluator {
 
@@ -39,11 +40,11 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 	List<ConditionTimerTask> conditionTasks = new ArrayList<>();
 
 	@Override
-	public Iterable<FeaturePermission> evaluateConditions(Iterable<LicensingCondition> conditions) {
+	public Iterable<FeaturePermission> evaluateConditions(Iterable<LicensingCondition> conditions, LicensingConfiguration configuration) {
 		List<FeaturePermission> permissionsResult = new ArrayList<>();
 
 		for (LicensingCondition condition : conditions) {
-			boolean conditionExists = checkExistense(condition);
+			boolean conditionExists = checkExistense(condition, configuration);
 			if (conditionExists) {
 
 				synchronized (condition) {
@@ -92,7 +93,7 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 	private synchronized void lockCondition(LicensingCondition condition) {
 		lockedConditions.add(condition);
 	}
-
+	
 	private FeaturePermission createFeaturePermission(LicensingCondition condition) {
 		long leaseTime = System.currentTimeMillis();
 		long expireTime = leaseTime + 60 * 60 * 1000;
@@ -103,9 +104,9 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 
 	}
 
-	private boolean checkExistense(LicensingCondition condition) {
+	private boolean checkExistense(LicensingCondition condition, LicensingConfiguration configuration) {
 		for (ConditionMiner miner : miners) {
-			for (LicensingCondition extractedCondition : miner.extractLicensingConditions(condition)) {
+			for (LicensingCondition extractedCondition : miner.extractLicensingConditions(configuration)) {
 				if (condition.equals(extractedCondition)) {
 					return true;
 				}
