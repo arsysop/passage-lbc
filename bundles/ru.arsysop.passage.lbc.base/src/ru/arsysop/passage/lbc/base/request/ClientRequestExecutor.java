@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
-import ru.arsysop.passage.lic.net.RequestParameters;
+import ru.arsysop.passage.lic.net.LicensingRequests;
 
 public class ClientRequestExecutor extends BaseComponent implements ServerRequestExecutor {
 
@@ -51,7 +51,7 @@ public class ClientRequestExecutor extends BaseComponent implements ServerReques
 	public void executeRequest(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		String actionId = request.getParameter(RequestParameters.ACTION);
+		String actionId = request.getParameter(LicensingRequests.ACTION);
 		logger.info(String.format(RECIEVED_ACTION_TXT, actionId));
 		if (clientRecognition(request)) {
 			ServerRequestAction requestAction = mapActionRequest.get(actionId);
@@ -70,7 +70,7 @@ public class ClientRequestExecutor extends BaseComponent implements ServerReques
 	}
 
 	public boolean clientRecognition(HttpServletRequest request) {
-		String httpClientTrustId = request.getParameter(RequestParameters.USER);
+		String httpClientTrustId = request.getParameter(LicensingRequests.USER);
 		if (CLIENT_TRUSTED_VALUE.equals(httpClientTrustId)) {
 			return true;
 		}
@@ -79,7 +79,7 @@ public class ClientRequestExecutor extends BaseComponent implements ServerReques
 
 	@Override
 	public boolean checkAccesstMode(HttpServletRequest baseRequest) {
-		String requestAccessMode = baseRequest.getParameter(RequestParameters.MODE);
+		String requestAccessMode = baseRequest.getParameter(LicensingRequests.MODE);
 		if (requestAccessMode != null && requestAccessMode.equals(accessModeId)) {
 			return true;
 		}

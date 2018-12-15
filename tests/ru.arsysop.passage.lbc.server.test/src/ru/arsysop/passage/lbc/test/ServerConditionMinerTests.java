@@ -57,7 +57,7 @@ import org.osgi.framework.ServiceReference;
 
 import ru.arsysop.passage.lic.base.LicensingConfigurations;
 import ru.arsysop.passage.lic.base.LicensingPaths;
-import ru.arsysop.passage.lic.net.RequestProducer;
+import ru.arsysop.passage.lic.net.LicensingRequests;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
 import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 
@@ -154,7 +154,6 @@ public class ServerConditionMinerTests {
 			}
 		}
 
-		RequestProducer requestProducer = new RequestProducer();
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		String hostValue = settingsMap.get(HOST_KEY);
 		assertNotNull(hostValue);
@@ -164,10 +163,10 @@ public class ServerConditionMinerTests {
 		assertNotNull(portValue);
 		assertFalse(portValue.isEmpty());
 
-		Map<String, String> requestAttributes = requestProducer.initRequestParams(hostValue, portValue, "client",
+		Map<String, String> requestAttributes = LicensingRequests.initRequestParams(hostValue, portValue, "client",
 				"product1.id", "1.0.0");
 		HttpHost host = HttpHost.create(String.format(HOST_PORT, hostValue, portValue));
-		URIBuilder requestBulder = requestProducer.createRequestURI(httpClient, host, requestAttributes,
+		URIBuilder requestBulder = LicensingRequests.createRequestURI(httpClient, host, requestAttributes,
 				MINER_LICENSING_CONDITION_TYPE);
 
 		assertNotNull(requestBulder);

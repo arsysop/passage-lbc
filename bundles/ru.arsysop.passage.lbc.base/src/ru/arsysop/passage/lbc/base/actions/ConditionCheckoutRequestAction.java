@@ -20,8 +20,8 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
-import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT;
-import static ru.arsysop.passage.lic.net.RequestParameters.VERSION;
+import static ru.arsysop.passage.lic.net.LicensingRequests.PRODUCT;
+import static ru.arsysop.passage.lic.net.LicensingRequests.VERSION;
 
 import java.io.PrintWriter;
 import java.util.HashMap;

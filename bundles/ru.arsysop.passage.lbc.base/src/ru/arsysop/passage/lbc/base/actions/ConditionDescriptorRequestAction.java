@@ -34,14 +34,14 @@ import javax.servlet.http.HttpServletResponse;
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lic.base.LicensingConfigurations;
-import ru.arsysop.passage.lic.net.RequestParameters;
+import ru.arsysop.passage.lic.net.LicensingRequests;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
 import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
 
-import static ru.arsysop.passage.lic.net.RequestParameters.PRODUCT;
-import static ru.arsysop.passage.lic.net.RequestParameters.VERSION;
+import static ru.arsysop.passage.lic.net.LicensingRequests.PRODUCT;
+import static ru.arsysop.passage.lic.net.LicensingRequests.VERSION;
 
 /**
  * According to AccessManager specification implementation of
@@ -80,7 +80,7 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 
 				resultConditions.addAll((Collection<? extends LicensingCondition>) descriptors);
 			}
-			String contentType = request.getParameter(RequestParameters.CONTENT_TYPE);
+			String contentType = request.getParameter(LicensingRequests.CONTENT_TYPE);
 			LicensingConditionTransport transport = mapCondition2Transport.get(contentType);
 			if (transport == null) {
 				logger.error(String.format("LicensingConditionTransport not defined for contentType: %s", contentType));
