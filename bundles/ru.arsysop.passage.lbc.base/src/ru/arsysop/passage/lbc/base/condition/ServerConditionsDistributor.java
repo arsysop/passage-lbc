@@ -54,7 +54,7 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 
 						boolean conditionIsLocked = lockedConditions.contains(condition);
 						if (!conditionIsLocked) {
-							FeaturePermission createFeaturePermition = createFeaturePermission(condition);
+							FeaturePermission createFeaturePermition = createFeaturePermission(condition, configuration);
 							launchFeaturePermissionTask(condition, createFeaturePermition);
 							lockCondition(condition);
 							permissionsResult.add(createFeaturePermition);
@@ -94,12 +94,12 @@ public class ServerConditionsDistributor extends BaseComponent implements Condit
 		lockedConditions.add(condition);
 	}
 	
-	private FeaturePermission createFeaturePermission(LicensingCondition condition) {
+	private FeaturePermission createFeaturePermission(LicensingCondition condition, LicensingConfiguration configuration) {
 		long leaseTime = System.currentTimeMillis();
 		long expireTime = leaseTime + 60 * 60 * 1000;
 		Date lease = new Date(leaseTime);
 		Date expire = new Date(expireTime);
-		FeaturePermission permission = FeaturePermissions.create(condition, lease, expire);
+		FeaturePermission permission = FeaturePermissions.create(condition, configuration, lease, expire);
 		return permission;
 
 	}
