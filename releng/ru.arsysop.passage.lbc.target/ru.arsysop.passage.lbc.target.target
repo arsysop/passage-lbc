@@ -28,7 +28,7 @@
 			<unit id="ru.arsysop.passage.brc.license.feature.feature.group" version="0.0.0"/>
 			<unit id="ru.arsysop.passage.brc.bc.feature.feature.group" version="0.0.0"/>
 			<unit id="ru.arsysop.passage.brc.oshi.feature.feature.group" version="0.0.0"/>
-			<repository location="http://dl.bintray.com/arsysop/passage-brc/0.3.1/"/>
+			<repository location="http://dl.bintray.com/arsysop/passage-brc/0.3.2/"/>
 		</location>
 		
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -38,8 +38,9 @@
 			<unit id="ru.arsysop.passage.lic.inspector.feature.feature.group" version="0.0.0"/>
 			<unit id="ru.arsysop.passage.lic.model.feature.feature.group" version="0.0.0"/>
 			<unit id="ru.arsysop.passage.lic.net.feature.feature.group" version="0.0.0"/>
+			<unit id="ru.arsysop.passage.lic.json.feature.feature.group" version="0.0.0"/>
 			<unit id="ru.arsysop.passage.lic.oshi.feature.feature.group" version="0.0.0"/>
-			<repository location="http://dl.bintray.com/arsysop/passage-lic/0.3.1/"/>
+			<repository location="http://dl.bintray.com/arsysop/passage-lic/0.3.2/"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 			<unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
