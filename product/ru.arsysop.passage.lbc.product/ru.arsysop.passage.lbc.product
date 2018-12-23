@@ -92,6 +92,7 @@
       <plugin id="ru.arsysop.passage.lbc.server"/>
       <plugin id="ru.arsysop.passage.lic.base"/>
       <plugin id="ru.arsysop.passage.lic.net"/>
+      <plugin id="ru.arsysop.passage.lic.json"/>
       <plugin id="ru.arsysop.passage.lic.registry"/>
       <plugin id="ru.arsysop.passage.lic.runtime"/>
    </plugins>

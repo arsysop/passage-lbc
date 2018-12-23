@@ -55,9 +55,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+import ru.arsysop.passage.lic.base.LicensingConfigurations;
 import ru.arsysop.passage.lic.base.LicensingPaths;
-import ru.arsysop.passage.lic.net.RequestProducer;
+import ru.arsysop.passage.lic.net.LicensingRequests;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 
 public class ServerConditionMinerTests {
 	private static final String EXTENSION_SERVER_SETTINGS = ".settings";
@@ -91,17 +93,18 @@ public class ServerConditionMinerTests {
 		environmentInfoReference = bundleContext.getServiceReference(EnvironmentInfo.class);
 		environmentInfo = bundleContext.getService(environmentInfoReference);
 		try {
-			createServerConfiguration(PRODUCT_ID_TEST);
+			createServerConfiguration(LicensingConfigurations.create(PRODUCT_ID_TEST, null));
 		} catch (IOException e) {
 			assumeNoException(e.getMessage(), e);
 		}
 	}
 
-	private static void createServerConfiguration(String productId) throws IOException {
+	private static void createServerConfiguration(LicensingConfiguration configuration) throws IOException {
 		String install = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
-		Path path = LicensingPaths.resolveConfigurationPath(install, productId);
+		Path path = LicensingPaths.resolveConfigurationPath(install, configuration);
 		Files.createDirectories(path);
-		File serverConfigurationFile = path.resolve(productId + EXTENSION_SERVER_SETTINGS).toFile();
+		String fileName = LicensingPaths.composeFileName(configuration, EXTENSION_SERVER_SETTINGS);
+		File serverConfigurationFile = path.resolve(fileName).toFile();
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(serverConfigurationFile));) {
 			bw.write(PASSAGE_SERVER_HOST_DEF);
@@ -121,7 +124,8 @@ public class ServerConditionMinerTests {
 		assertNotNull(environmentInfo);
 		String areaValue = environmentInfo.getProperty(LicensingPaths.PROPERTY_OSGI_INSTALL_AREA);
 
-		Path configurationPath = LicensingPaths.resolveConfigurationPath(areaValue, PRODUCT_ID_TEST);
+		LicensingConfiguration configuration = LicensingConfigurations.create(PRODUCT_ID_TEST, null);
+		Path configurationPath = LicensingPaths.resolveConfigurationPath(areaValue, configuration);
 		assertTrue(Files.isDirectory(configurationPath));
 
 		List<Path> settinsFiles = new ArrayList<>();
@@ -150,7 +154,6 @@ public class ServerConditionMinerTests {
 			}
 		}
 
-		RequestProducer requestProducer = new RequestProducer();
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		String hostValue = settingsMap.get(HOST_KEY);
 		assertNotNull(hostValue);
@@ -160,9 +163,10 @@ public class ServerConditionMinerTests {
 		assertNotNull(portValue);
 		assertFalse(portValue.isEmpty());
 
-		Map<String, String> requestAttributes = requestProducer.initRequestParams(hostValue, portValue, "client");
+		Map<String, String> requestAttributes = LicensingRequests.initRequestParams(hostValue, portValue, "client",
+				"product1.id", "1.0.0");
 		HttpHost host = HttpHost.create(String.format(HOST_PORT, hostValue, portValue));
-		URIBuilder requestBulder = requestProducer.createRequestURI(httpClient, host, requestAttributes,
+		URIBuilder requestBulder = LicensingRequests.createRequestURI(httpClient, host, requestAttributes,
 				MINER_LICENSING_CONDITION_TYPE);
 
 		assertNotNull(requestBulder);

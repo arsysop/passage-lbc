@@ -22,64 +22,62 @@ package ru.arsysop.passage.lbc.base.condition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingConfiguration;;
 
 public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
-
-	private static final Object LICENSING_DATA = "licensingData";
-	List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
+	
+	private final List<LicensingConditionStorage> conditionStorages = new ArrayList<>();
 
 	public boolean checkProductById(String productId) {
 		return false;
 	}
 
-	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage, Map<String, String> context) {
+	public void bindLicensingConditionStorage(LicensingConditionStorage conditionStorage) {
 		logger.debug(conditionStorage.getClass().getName());
-
-		String conditions = context.get(LICENSING_DATA);
-
-		if (conditions != null && !conditions.isEmpty()) {
-			String conditionDatas[] = conditions.split(",");
-			for (String condition : conditionDatas) {
-				conditionStorage.createConditionDescriptors(condition);
-				if (!conditionStorages.contains(conditionStorage)) {
-					conditionStorages.add(conditionStorage);
-				}
+		if (conditionStorage != null) {
+			if (!conditionStorages.contains(conditionStorage)) {
+				conditionStorages.add(conditionStorage);
 			}
+
 		}
 	}
 
-	public void unbindLicensingConditionStorage(LicensingConditionStorage conditionStorage,
-			Map<String, String> context) {
+	public void unbindLicensingConditionStorage(LicensingConditionStorage conditionStorage) {
 		logger.debug(conditionStorage.getClass().getName());
 
-		String conditions = context.get(LICENSING_DATA);
-
-		if (conditions != null && !conditions.isEmpty()) {
-			String conditionDatas[] = conditions.split(",");
-			for (String condition : conditionDatas) {
-				conditionStorage.createConditionDescriptors(condition);
-				if (conditionStorages.contains(conditionStorage)) {
-					conditionStorages.remove(conditionStorage);
-				}
+		if (conditionStorage != null) {
+			if (conditionStorages.contains(conditionStorage)) {
+				conditionStorages.remove(conditionStorage);
 			}
 		}
 	}
 
 	@Override
-	public Iterable<LicensingCondition> extractLicensingConditions(Object configuration) {
-		List<LicensingCondition> result = new ArrayList<>();
+	public Iterable<LicensingCondition> extractLicensingConditions(LicensingConfiguration configuration) {
 
+		List<LicensingCondition> result = new ArrayList<>();
+		if (configuration == null) {
+			logger.error("Licensing configuration not defined");
+			return result;
+		}
+		String productIdentifier = configuration.getProductIdentifier();
+		String productVersion = configuration.getProductVersion();
+		if (productIdentifier == null || productIdentifier.isEmpty()) {
+			logger.error("Product identifier not defined");
+			return result;
+		}
+		if (productVersion == null || productVersion.isEmpty()) {
+			logger.error("Product version not defined");
+			return result;
+		}
 		for (LicensingConditionStorage storage : conditionStorages) {
-			result.addAll(storage.getLicensingCondition());
+			result.addAll(storage.getLicensingCondition(productIdentifier, productVersion));
 		}
 		return result;
 	}
-
 }

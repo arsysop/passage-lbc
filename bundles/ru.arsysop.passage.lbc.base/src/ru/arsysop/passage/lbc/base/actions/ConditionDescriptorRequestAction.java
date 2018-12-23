@@ -20,6 +20,7 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +33,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lic.net.RequestParameters;
+import ru.arsysop.passage.lic.base.LicensingConfigurations;
+import ru.arsysop.passage.lic.net.LicensingRequests;
 import ru.arsysop.passage.lic.runtime.ConditionMiner;
 import ru.arsysop.passage.lic.runtime.LicensingCondition;
+import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
+
+import static ru.arsysop.passage.lic.net.LicensingRequests.PRODUCT;
+import static ru.arsysop.passage.lic.net.LicensingRequests.VERSION;
 
 /**
  * According to AccessManager specification implementation of
@@ -44,12 +50,7 @@ import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
  */
 public class ConditionDescriptorRequestAction extends BaseComponent implements ServerRequestAction {
 
-	private static final String TRANSPORT_NOT_DEFINED_ERROR = "LicensingConditionTransport not defined for contentType: %s";
 	private static final String SERVER_MINER_TYPE = "server.miner"; // NLS-$1
-	private static final String ERROR_CONDITIONS_NOT_AVAILABLE = "No condition miners available"; // NLS-$1
-	private static final String MSG_LOG = "Executing action request from class: %s"; // NLS-$1
-	private static final String PARAMETER_CONFIGURATION = "configuration"; // NLS-$1
-
 	private static final String APPLICATION_JSON = "application/json"; // NLS-$1
 	private static final String LICENSING_CONTENT_TYPE = "licensing.content.type"; // NLS-$1
 	private static final String MINER_TYPE_KEY = "miner.type";// NLS-$1
@@ -62,13 +63,16 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 		if (logger == null) {
 			return false;
 		}
-		logger.info(String.format(MSG_LOG, this.getClass().getName()));
+		logger.info(String.format("Executing action request from class: %s", this.getClass().getName()));
 		if (licenseConditionMiners.isEmpty()) {
-			logger.error(ERROR_CONDITIONS_NOT_AVAILABLE);
+			logger.error("No condition miners available");
 			return false;
 		}
 		try {
-			String configuration = request.getParameter(PARAMETER_CONFIGURATION);
+			String productId = request.getParameter(PRODUCT);
+			String productVersion = request.getParameter(VERSION);
+			LicensingConfiguration configuration = LicensingConfigurations.create(productId, productVersion);
+
 			Collection<LicensingCondition> resultConditions = new ArrayList<>();
 
 			for (ConditionMiner miner : licenseConditionMiners) {
@@ -76,10 +80,10 @@ public class ConditionDescriptorRequestAction extends BaseComponent implements S
 
 				resultConditions.addAll((Collection<? extends LicensingCondition>) descriptors);
 			}
-			String contentType = request.getParameter(RequestParameters.CONTENT_TYPE);
+			String contentType = request.getParameter(LicensingRequests.CONTENT_TYPE);
 			LicensingConditionTransport transport = mapCondition2Transport.get(contentType);
 			if (transport == null) {
-				logger.error(String.format(TRANSPORT_NOT_DEFINED_ERROR, contentType));
+				logger.error(String.format("LicensingConditionTransport not defined for contentType: %s", contentType));
 				return false;
 			}
 
