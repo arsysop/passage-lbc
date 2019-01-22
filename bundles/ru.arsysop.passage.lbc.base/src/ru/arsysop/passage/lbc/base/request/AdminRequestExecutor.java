@@ -26,10 +26,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.passage.lic.net.LicensingRequests;
+
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
-import ru.arsysop.passage.lic.net.LicensingRequests;
 
 public class AdminRequestExecutor extends BaseComponent implements ServerRequestExecutor {
 

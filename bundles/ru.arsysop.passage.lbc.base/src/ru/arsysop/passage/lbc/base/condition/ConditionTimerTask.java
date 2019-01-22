@@ -2,7 +2,7 @@ package ru.arsysop.passage.lbc.base.condition;
 
 import java.util.TimerTask;
 
-import ru.arsysop.passage.lic.net.TimeConditions;
+import org.eclipse.passage.lic.net.TimeConditions;
 
 public abstract class ConditionTimerTask extends TimerTask {
 

@@ -21,6 +21,9 @@
 package ru.arsysop.passage.lbc.base.actions;
 
 
+import static org.eclipse.passage.lic.net.LicensingRequests.PRODUCT;
+import static org.eclipse.passage.lic.net.LicensingRequests.VERSION;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,22 +34,20 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.passage.lic.base.LicensingConfigurations;
+import org.eclipse.passage.lic.net.LicensingRequests;
+import org.eclipse.passage.lic.runtime.ConditionMiner;
+import org.eclipse.passage.lic.runtime.LicensingCondition;
+import org.eclipse.passage.lic.runtime.LicensingConfiguration;
+import org.eclipse.passage.lic.runtime.io.LicensingConditionTransport;
+
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lic.base.LicensingConfigurations;
-import ru.arsysop.passage.lic.net.LicensingRequests;
-import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;
-import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
-import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
-
-import static ru.arsysop.passage.lic.net.LicensingRequests.PRODUCT;
-import static ru.arsysop.passage.lic.net.LicensingRequests.VERSION;
 
 /**
  * According to AccessManager specification implementation of
  * {@code Iterable<ConditionDescriptor> extractConditions(Object configuration)}
- * {@link ru.arsysop.passage.lic.runtime.AccessManager}
+ * {@link org.eclipse.passage.lic.runtime.AccessManager}
  */
 public class ConditionDescriptorRequestAction extends BaseComponent implements ServerRequestAction {
 

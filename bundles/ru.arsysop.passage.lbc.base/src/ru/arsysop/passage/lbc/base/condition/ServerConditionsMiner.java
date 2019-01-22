@@ -23,11 +23,12 @@ package ru.arsysop.passage.lbc.base.condition;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.passage.lic.runtime.ConditionMiner;
+import org.eclipse.passage.lic.runtime.LicensingCondition;
+import org.eclipse.passage.lic.runtime.LicensingConfiguration;
+
 import ru.arsysop.passage.lbc.base.BaseComponent;
-import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lic.runtime.ConditionMiner;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;
-import ru.arsysop.passage.lic.runtime.LicensingConfiguration;;
+import ru.arsysop.passage.lbc.server.LicensingConditionStorage;;
 
 public class ServerConditionsMiner extends BaseComponent implements ConditionMiner {
 	

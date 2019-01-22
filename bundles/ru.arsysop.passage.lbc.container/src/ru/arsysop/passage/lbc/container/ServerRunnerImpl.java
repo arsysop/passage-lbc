@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.passage.lic.net.LicensingRequests;
 import org.osgi.service.log.Logger;
 import org.osgi.service.log.LoggerFactory;
 
@@ -32,7 +33,6 @@ import ru.arsysop.passage.lbc.server.ServerRequestAction;
 import ru.arsysop.passage.lbc.server.ServerRequestExecutor;
 import ru.arsysop.passage.lbc.server.ServerRequestHandler;
 import ru.arsysop.passage.lbc.server.ServerRunner;
-import ru.arsysop.passage.lic.net.LicensingRequests;
 
 public class ServerRunnerImpl implements ServerRunner {
 
