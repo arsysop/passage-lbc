@@ -89,7 +89,6 @@
       <plugin id="org.eclipse.passage.lic.registry"/>
       <plugin id="org.eclipse.passage.lic.base"/>
       <plugin id="org.eclipse.passage.lic.net"/>
-      <plugin id="org.eclipse.passage.lic.json"/>
       <plugin id="ru.arsysop.passage.lbc.base"/>
       <plugin id="ru.arsysop.passage.lbc.container"/>
       <plugin id="ru.arsysop.passage.lbc.jetty"/>
