@@ -21,7 +21,9 @@
       id="ru.arsysop.passage.lbc.feature"
       label="%Feature-Name"
       version="0.3.2.qualifier"
-      provider-name="%Provider-Name">
+      provider-name="%Provider-Name"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
 
    <description>
       %description
