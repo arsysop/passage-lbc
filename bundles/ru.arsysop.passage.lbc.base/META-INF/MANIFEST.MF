@@ -9,16 +9,9 @@ Automatic-Module-Name: ru.arsysop.passage.licnsing.server.base
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: javax.servlet,
  org.eclipse.osgi,
- ru.arsysop.passage.lbc.server,
- ru.arsysop.passage.lic.runtime,
- com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.9.2",
- com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2",
- com.fasterxml.jackson.core.jackson-databind;bundle-version="2.9.2",
- ru.arsysop.passage.lic.net,
- ru.arsysop.passage.lic.base,
- ru.arsysop.passage.lic.registry,
- ru.arsysop.passage.lic.bc,
- org.eclipse.emf.ecore.xmi
+ org.eclipse.passage.lic.base,
+ org.eclipse.passage.lic.net,
+ ru.arsysop.passage.lbc.server
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 

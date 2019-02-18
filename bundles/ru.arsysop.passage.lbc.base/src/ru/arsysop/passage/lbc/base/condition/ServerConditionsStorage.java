@@ -37,15 +37,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.eclipse.passage.lic.base.BaseLicensingCondition;
+import org.eclipse.passage.lic.base.LicensingPaths;
+import org.eclipse.passage.lic.base.LicensingProperties;
+import org.eclipse.passage.lic.runtime.LicensingCondition;
+import org.eclipse.passage.lic.runtime.io.LicensingConditionTransport;
+import org.eclipse.passage.lic.runtime.io.StreamCodec;
 
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.server.LicensingConditionStorage;
-import ru.arsysop.passage.lic.base.BaseLicensingCondition;
-import ru.arsysop.passage.lic.base.LicensingPaths;
-import ru.arsysop.passage.lic.base.LicensingProperties;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;
-import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
-import ru.arsysop.passage.lic.runtime.io.StreamCodec;
 
 public class ServerConditionsStorage extends BaseComponent implements LicensingConditionStorage {
 

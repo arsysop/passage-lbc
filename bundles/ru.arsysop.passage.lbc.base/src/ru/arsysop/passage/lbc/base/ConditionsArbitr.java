@@ -3,7 +3,7 @@ package ru.arsysop.passage.lbc.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.arsysop.passage.lic.base.BaseLicensingCondition;
+import org.eclipse.passage.lic.base.BaseLicensingCondition;
 
 public class ConditionsArbitr {
 

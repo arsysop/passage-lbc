@@ -20,8 +20,8 @@
  *******************************************************************************/
 package ru.arsysop.passage.lbc.base.actions;
 
-import static ru.arsysop.passage.lic.net.LicensingRequests.PRODUCT;
-import static ru.arsysop.passage.lic.net.LicensingRequests.VERSION;
+import static org.eclipse.passage.lic.net.LicensingRequests.PRODUCT;
+import static org.eclipse.passage.lic.net.LicensingRequests.VERSION;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -30,21 +30,22 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.passage.lic.base.LicensingConfigurations;
+import org.eclipse.passage.lic.runtime.ConditionEvaluator;
+import org.eclipse.passage.lic.runtime.FeaturePermission;
+import org.eclipse.passage.lic.runtime.LicensingCondition;
+import org.eclipse.passage.lic.runtime.LicensingConfiguration;
+import org.eclipse.passage.lic.runtime.io.FeaturePermissionTransport;
+import org.eclipse.passage.lic.runtime.io.LicensingConditionTransport;
+
 import ru.arsysop.passage.lbc.base.BaseComponent;
 import ru.arsysop.passage.lbc.base.condition.ServerConditionsDistributor;
 import ru.arsysop.passage.lbc.server.ServerRequestAction;
-import ru.arsysop.passage.lic.base.LicensingConfigurations;
-import ru.arsysop.passage.lic.runtime.ConditionEvaluator;
-import ru.arsysop.passage.lic.runtime.FeaturePermission;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;
-import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
-import ru.arsysop.passage.lic.runtime.io.FeaturePermissionTransport;
-import ru.arsysop.passage.lic.runtime.io.LicensingConditionTransport;
 
 /**
  * According to AccessManager specification implementation of
  * {@code Iterable<FeaturePermission> evaluateConditions()}
- * {@link ru.arsysop.passage.lic.runtime.AccessManager}
+ * {@link org.eclipse.passage.lic.runtime.AccessManager}
  */
 public class ConditionCheckoutRequestAction extends BaseComponent implements ServerRequestAction {
 

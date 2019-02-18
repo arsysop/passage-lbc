@@ -11,11 +11,11 @@ Export-Package: ru.arsysop.passage.lbc.server
 Require-Bundle: javax.servlet,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
- ru.arsysop.passage.lic.runtime,
+ org.eclipse.passage.lic.runtime,
  com.fasterxml.jackson.core.jackson-databind,
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.9.2",
- ru.arsysop.passage.lic.net,
- ru.arsysop.passage.lic.base
+ org.eclipse.passage.lic.net,
+ org.eclipse.passage.lic.base
 Automatic-Module-Name: ru.arsysop.passage.licensing.server
 
 

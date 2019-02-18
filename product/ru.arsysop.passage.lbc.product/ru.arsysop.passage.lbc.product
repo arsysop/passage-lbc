@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Passage Licensing Backend Component Server" uid="ru.arsysop.passage.lbc.application.product" id="ru.arsysop.passage.lbc.application.product" application="ru.arsysop.passage.lbc.application" version="0.3.2.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="Passage Licensing Server" uid="ru.arsysop.passage.lbc.application.product" id="ru.arsysop.passage.lbc.application.product" application="ru.arsysop.passage.lbc.application" version="0.3.2.qualifier" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -85,23 +85,22 @@
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
       <plugin id="org.tukaani.xz"/>
-      <plugin id="ru.arsysop.passage.lbc.application"/>
+      <plugin id="org.eclipse.passage.lic.runtime"/>
+      <plugin id="org.eclipse.passage.lic.registry"/>
+      <plugin id="org.eclipse.passage.lic.base"/>
+      <plugin id="org.eclipse.passage.lic.net"/>
       <plugin id="ru.arsysop.passage.lbc.base"/>
       <plugin id="ru.arsysop.passage.lbc.container"/>
       <plugin id="ru.arsysop.passage.lbc.jetty"/>
       <plugin id="ru.arsysop.passage.lbc.server"/>
-      <plugin id="ru.arsysop.passage.lic.base"/>
-      <plugin id="ru.arsysop.passage.lic.net"/>
-      <plugin id="ru.arsysop.passage.lic.json"/>
-      <plugin id="ru.arsysop.passage.lic.registry"/>
-      <plugin id="ru.arsysop.passage.lic.runtime"/>
+      <plugin id="ru.arsysop.passage.lbc.application"/>
    </plugins>
 
    <features>
-      <feature id="ru.arsysop.passage.lbc.feature" version="0.2.0.qualifier"/>
-      <feature id="org.eclipse.equinox.server.core" version="1.6.0.v20180502-1828"/>
-      <feature id="org.eclipse.equinox.server.jetty" version="1.5.0.v20180508-1121"/>
-      <feature id="org.eclipse.equinox.server.p2" version="1.4.0.v20180515-2149"/>
+      <feature id="ru.arsysop.passage.lbc.feature"/>
+      <feature id="org.eclipse.equinox.server.core"/>
+      <feature id="org.eclipse.equinox.server.jetty"/>
+      <feature id="org.eclipse.equinox.server.p2"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>

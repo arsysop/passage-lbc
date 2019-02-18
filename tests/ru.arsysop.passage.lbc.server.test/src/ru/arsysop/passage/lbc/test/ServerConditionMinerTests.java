@@ -48,18 +48,17 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.eclipse.osgi.service.environment.EnvironmentInfo;
+import org.eclipse.passage.lic.base.LicensingConfigurations;
+import org.eclipse.passage.lic.base.LicensingPaths;
+import org.eclipse.passage.lic.net.LicensingRequests;
+import org.eclipse.passage.lic.runtime.LicensingCondition;
+import org.eclipse.passage.lic.runtime.LicensingConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
-
-import ru.arsysop.passage.lic.base.LicensingConfigurations;
-import ru.arsysop.passage.lic.base.LicensingPaths;
-import ru.arsysop.passage.lic.net.LicensingRequests;
-import ru.arsysop.passage.lic.runtime.LicensingCondition;
-import ru.arsysop.passage.lic.runtime.LicensingConfiguration;
 
 public class ServerConditionMinerTests {
 	private static final String EXTENSION_SERVER_SETTINGS = ".settings";

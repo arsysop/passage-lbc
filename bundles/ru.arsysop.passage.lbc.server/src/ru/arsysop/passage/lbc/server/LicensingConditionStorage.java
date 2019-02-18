@@ -22,7 +22,7 @@ package ru.arsysop.passage.lbc.server;
 
 import java.util.List;
 
-import ru.arsysop.passage.lic.base.BaseLicensingCondition;
+import org.eclipse.passage.lic.base.BaseLicensingCondition;
 
 public interface LicensingConditionStorage {
 
