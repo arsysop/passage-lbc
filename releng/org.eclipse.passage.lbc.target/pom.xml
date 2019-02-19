@@ -17,14 +17,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>org.eclipse.passage.lbc.runtime.features</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>org.eclipse.passage.lbc.target</artifactId>
+	<packaging>eclipse-target-definition</packaging>
 
 	<parent>
 		<groupId>org.eclipse.passage.lbc</groupId>
 		<artifactId>org.eclipse.passage.lbc.parent</artifactId>
 		<version>0.3.2-SNAPSHOT</version>
-		<relativePath>../releng/org.eclipse.passage.lbc.parent</relativePath>
+		<relativePath>../../releng/org.eclipse.passage.lbc.parent</relativePath>
 	</parent>
 
 </project>

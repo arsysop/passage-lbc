@@ -10,10 +10,11 @@
  Contributors:
      ArSysOp - initial API and implementation
 -->
-<extensions>
-	<extension>
-		<groupId>org.eclipse.tycho.extras</groupId>
-		<artifactId>tycho-pomless</artifactId>
-		<version>1.2.0</version>
-	</extension>
-</extensions>
+<site>
+   <feature url="features/org.eclipse.passage.lbc.feature_0.3.2.qualifier.jar" id="org.eclipse.passage.lbc.feature" version="0.3.2.qualifier"/>
+   <category-def name="org.eclipse.passage.lbc.category" label="Passage Licensing Server">
+      <description>
+         Passage Licensing Server
+      </description>
+   </category-def>
+</site>
