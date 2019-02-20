@@ -11,7 +11,7 @@
      ArSysOp - initial API and implementation
 -->
 <site>
-   <feature url="features/org.eclipse.passage.lbc.feature_0.3.2.qualifier.jar" id="org.eclipse.passage.lbc.feature" version="0.3.2.qualifier"/>
+   <feature url="features/org.eclipse.passage.lbc.feature_0.3.3.qualifier.jar" id="org.eclipse.passage.lbc.feature" version="0.3.3.qualifier"/>
    <category-def name="org.eclipse.passage.lbc.category" label="Passage Licensing Server">
       <description>
          Passage Licensing Server

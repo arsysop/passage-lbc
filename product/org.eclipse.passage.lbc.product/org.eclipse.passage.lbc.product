@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Passage Licensing Server" uid="org.eclipse.passage.lbc.application.product" id="org.eclipse.passage.lbc.application.product" application="org.eclipse.passage.lbc.application" version="0.3.2.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="Passage Licensing Server" uid="org.eclipse.passage.lbc.application.product" id="org.eclipse.passage.lbc.application.product" application="org.eclipse.passage.lbc.application" version="0.3.3.qualifier" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>

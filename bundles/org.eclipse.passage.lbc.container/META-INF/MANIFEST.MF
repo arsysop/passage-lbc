@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-SymbolicName: org.eclipse.passage.lbc.container
-Bundle-Version: 0.3.2.qualifier
+Bundle-Version: 0.3.3.qualifier
 Bundle-Copyright: %Bundle-Copyright
 Automatic-Module-Name: org.eclipse.passage.lbc.server.container
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
