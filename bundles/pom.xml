@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.eclipse.passage.lbc</groupId>
 		<artifactId>org.eclipse.passage.lbc.parent</artifactId>
-		<version>0.3.2-SNAPSHOT</version>
+		<version>0.3.3</version>
 		<relativePath>../releng/org.eclipse.passage.lbc.parent</relativePath>
 	</parent>
 
